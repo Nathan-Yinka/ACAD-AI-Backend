@@ -12,7 +12,7 @@ from apps.assessments.serializers import (
     ExamDetailSerializer,
 )
 from apps.assessments.serializers.session_serializers import ExamSessionWithTokenSerializer
-from apps.assessments.permissions import IsStudent
+from apps.core.permissions import IsStudent
 from apps.core.exceptions import ExamNotFoundError
 
 logger = logging.getLogger(__name__)

@@ -8,11 +8,11 @@ from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiPara
 from apps.core.mixins import StandardResponseMixin
 from apps.core.response import StandardResponse
 from apps.assessments.models import Exam
-from apps.assessments.admin_serializers import (
+from apps.assessments.serializers.admin_serializers import (
     AdminExamSerializer,
     AdminExamDetailSerializer,
 )
-from apps.assessments.permissions import IsAdmin
+from apps.core.permissions import IsAdmin
 from apps.assessments.services.exam_service import ExamService
 from apps.core.exceptions import ExamModificationError
 

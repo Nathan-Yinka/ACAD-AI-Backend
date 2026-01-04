@@ -6,8 +6,8 @@ from rest_framework import viewsets, permissions
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
 from apps.core.mixins import StandardResponseMixin
 from apps.assessments.models import Question, Exam
-from apps.assessments.admin_serializers import AdminQuestionSerializer
-from apps.assessments.permissions import IsAdmin
+from apps.assessments.serializers.admin_serializers import AdminQuestionSerializer
+from apps.core.permissions import IsAdmin
 from apps.core.exceptions import ExamNotFoundError, ExamModificationError
 
 logger = logging.getLogger(__name__)

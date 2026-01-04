@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from apps.core.response import StandardResponse
 from apps.assessments.models import Exam, ExamSession
-from apps.assessments.permissions import IsAdmin
+from apps.core.permissions import IsAdmin
 from apps.grading.models import GradeHistory
 from apps.grading.serializers.admin_serializers import (
     AdminSessionListSerializer,

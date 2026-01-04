@@ -1,6 +1,7 @@
+"""Admin serializers for the assessments app."""
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field
-from .models import Exam, Question, ExamSession
+from ..models import Exam, Question
 
 
 class AdminQuestionSerializer(serializers.ModelSerializer):
@@ -107,26 +108,4 @@ class AdminExamDetailSerializer(serializers.ModelSerializer):
     @extend_schema_field(serializers.FloatField())
     def get_max_score(self, obj):
         return float(obj.get_max_score())
-
-
-class ExamSessionSerializer(serializers.ModelSerializer):
-    """Serializer for ExamSession model."""
-    time_remaining_seconds = serializers.SerializerMethodField()
-    is_expired = serializers.SerializerMethodField()
-
-    class Meta:
-        model = ExamSession
-        fields = (
-            'id', 'exam', 'started_at', 'expires_at',
-            'is_completed', 'submitted_at', 'time_remaining_seconds', 'is_expired'
-        )
-        read_only_fields = ('id', 'started_at', 'expires_at', 'is_completed', 'submitted_at')
-
-    @extend_schema_field(serializers.IntegerField())
-    def get_time_remaining_seconds(self, obj):
-        return obj.time_remaining_seconds()
-
-    @extend_schema_field(serializers.BooleanField())
-    def get_is_expired(self, obj):
-        return obj.is_expired()
 

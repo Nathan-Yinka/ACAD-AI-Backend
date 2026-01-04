@@ -5,7 +5,7 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter
 from apps.core.response import StandardResponse
 from apps.grading.models import GradeHistory
 from apps.grading.serializers.grade_serializers import GradeHistoryListSerializer, GradeHistoryDetailSerializer
-from apps.assessments.permissions import IsStudent
+from apps.core.permissions import IsStudent
 
 logger = logging.getLogger(__name__)
 

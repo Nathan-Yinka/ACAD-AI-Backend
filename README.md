@@ -529,4 +529,4 @@ This is a test project. For questions or issues, please contact the development 
 
 ---
 
-**Built with ❤️ using Django, Django REST Framework, and Django Channels**
+**Built by OLudare Nathaniel Adeyinka**

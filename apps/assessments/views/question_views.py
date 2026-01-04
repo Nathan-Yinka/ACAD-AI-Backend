@@ -12,7 +12,7 @@ from apps.assessments.serializers import (
 )
 from apps.assessments.services.question_service import QuestionService
 from apps.assessments.services.exam_session_service import ExamSessionService
-from apps.assessments.permissions import IsStudent
+from apps.core.permissions import IsStudent
 from apps.core.exceptions import ExamNotFoundError, SubmissionValidationError
 
 logger = logging.getLogger(__name__)

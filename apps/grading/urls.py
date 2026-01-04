@@ -1,7 +1,8 @@
 """URL configuration for the grading app."""
 from django.urls import path
-from .views import GradeHistoryListView, GradeHistoryDetailView
-from .views.admin_views import (
+from .views import (
+    GradeHistoryListView,
+    GradeHistoryDetailView,
     AdminExamSessionsListView,
     AdminSessionDetailView,
     AdminExamGradesListView,

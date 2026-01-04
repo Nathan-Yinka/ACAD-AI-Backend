@@ -1,6 +1,4 @@
-"""
-Custom permission classes for the assessments app.
-"""
+"""Custom permission classes for the application."""
 from rest_framework import permissions
 
 
