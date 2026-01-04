@@ -3,6 +3,29 @@ set -e
 
 echo "Starting Acad AI Assessment Engine (Production Mode)..."
 
+# Check Redis connection
+echo "Checking Redis connection..."
+REDIS_URL=${REDIS_URL:-redis://localhost:6379/0}
+python3 << EOF
+import sys
+import os
+try:
+    import redis
+    redis_url = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+    try:
+        r = redis.from_url(redis_url)
+        r.ping()
+        print(f"Redis is running at {redis_url}")
+    except (redis.ConnectionError, redis.TimeoutError) as e:
+        print(f"ERROR: Redis at {redis_url} is not running. Please start Redis before continuing.")
+        sys.exit(1)
+except ImportError:
+    print("WARNING: redis package not found. Skipping Redis check. Make sure Redis is running at", redis_url)
+EOF
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
 echo "Waiting for database to be ready..."
 while ! python manage.py check --database default 2>/dev/null; do
     echo "Waiting for database..."
