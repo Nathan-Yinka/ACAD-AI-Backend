@@ -112,7 +112,7 @@ class ProfileTests(TestCase):
             last_name='User'
         )
         self.token = Token.objects.create(user=self.user)
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.key}')
         self.profile_url = reverse('accounts:profile')
 
     def test_get_profile_success(self):

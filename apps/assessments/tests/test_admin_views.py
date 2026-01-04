@@ -16,7 +16,7 @@ class AdminExamViewSetTests(TestCase):
         self.client = APIClient()
         self.admin = create_test_admin(email='admin@example.com')
         self.token = Token.objects.create(user=self.admin)
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.key}')
 
     def test_list_all_exams(self):
         """Test admin can list all exams including inactive."""
@@ -95,7 +95,7 @@ class AdminExamViewSetTests(TestCase):
         """Test students cannot access admin endpoints."""
         student = create_test_user(email='student@example.com')
         student_token = Token.objects.create(user=student)
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {student_token.key}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {student_token.key}')
 
         url = reverse('assessments:admin-exam-list')
         response = self.client.get(url)
@@ -110,7 +110,7 @@ class AdminQuestionViewSetTests(TestCase):
         self.client = APIClient()
         self.admin = create_test_admin(email='admin@example.com')
         self.token = Token.objects.create(user=self.admin)
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.key}')
         self.exam = Exam.objects.create(title='Test Exam', course='CS101', duration_minutes=60)
 
     def test_list_questions_for_exam(self):
@@ -205,7 +205,7 @@ class AdminSessionViewTests(TestCase):
         self.client = APIClient()
         self.admin = create_test_admin(email='admin@example.com')
         self.token = Token.objects.create(user=self.admin)
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.key}')
         
         self.student = create_test_user(email='student@example.com')
         self.exam = Exam.objects.create(
@@ -243,7 +243,7 @@ class AdminSessionViewTests(TestCase):
     def test_student_cannot_access_admin_sessions(self):
         """Test students cannot access admin session endpoints."""
         student_token = Token.objects.create(user=self.student)
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {student_token.key}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {student_token.key}')
         
         url = reverse('grading:admin-exam-sessions', kwargs={'exam_id': self.exam.id})
         response = self.client.get(url)

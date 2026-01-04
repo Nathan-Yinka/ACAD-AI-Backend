@@ -17,7 +17,7 @@ class GradeHistoryViewTests(TestCase):
         self.client = APIClient()
         self.user = create_test_user(email='student@example.com')
         self.token = Token.objects.create(user=self.user)
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.key}')
 
         self.exam = Exam.objects.create(
             title='Test Exam',
@@ -88,6 +88,10 @@ class GradeHistoryViewTests(TestCase):
         url = reverse('grading:history-detail', kwargs={'pk': self.grade.id})
         response = self.client.get(url)
 
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data['success'])
+        self.assertIn('data', response.data)
+        self.assertIn('question_scores', response.data['data'])
         question_scores = response.data['data']['question_scores']
         self.assertEqual(len(question_scores), 2)
         # Should only have order, score, max_score
@@ -121,7 +125,7 @@ class AdminGradeViewTests(TestCase):
         self.client = APIClient()
         self.admin = create_test_admin(email='admin@example.com')
         self.token = Token.objects.create(user=self.admin)
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.key}')
 
         self.student = create_test_user(email='student2@example.com')
         self.exam = Exam.objects.create(
@@ -180,7 +184,7 @@ class AdminGradeViewTests(TestCase):
     def test_non_admin_cannot_access_admin_endpoints(self):
         """Test non-admin cannot access admin endpoints."""
         user_token = Token.objects.create(user=self.student)
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {user_token.key}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {user_token.key}')
 
         url = reverse('grading:admin-grades-list')
         response = self.client.get(url)

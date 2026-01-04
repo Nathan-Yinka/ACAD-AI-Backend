@@ -15,7 +15,7 @@ class ExamViewSetTests(TestCase):
         self.client = APIClient()
         self.user = create_test_user(email='student@example.com')
         self.token = Token.objects.create(user=self.user)
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.key}')
 
         self.exam = Exam.objects.create(
             title='Python Basics',
@@ -45,7 +45,14 @@ class ExamViewSetTests(TestCase):
         url = reverse('assessments:exam-list')
         response = self.client.get(url)
 
-        exam_ids = [e['id'] for e in response.data['data']['results']]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data['success'])
+        self.assertIn('data', response.data)
+        data = response.data['data']
+        if isinstance(data, dict) and 'results' in data:
+            exam_ids = [e['id'] for e in data['results']]
+        else:
+            exam_ids = [e['id'] for e in data] if isinstance(data, list) else []
         self.assertIn(self.exam.id, exam_ids)
         self.assertNotIn(inactive_exam.id, exam_ids)
 
@@ -105,7 +112,7 @@ class SessionQuestionViewTests(TestCase):
         self.client = APIClient()
         self.user = create_test_user(email='student2@example.com')
         self.token = Token.objects.create(user=self.user)
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.key}')
 
         self.exam = Exam.objects.create(
             title='Test Exam',
@@ -128,6 +135,8 @@ class SessionQuestionViewTests(TestCase):
         # Start session
         start_url = reverse('assessments:exam-start', kwargs={'pk': self.exam.id})
         response = self.client.post(start_url)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(response.data['success'])
         self.session_token = response.data['data']['token']
 
     def test_get_question_by_order(self):
@@ -209,7 +218,7 @@ class AdminExamViewSetTests(TestCase):
         self.client = APIClient()
         self.admin = create_test_admin(email='admin@example.com')
         self.token = Token.objects.create(user=self.admin)
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.key}')
 
     def test_create_exam(self):
         """Test admin can create exam."""
@@ -230,7 +239,7 @@ class AdminExamViewSetTests(TestCase):
         """Test non-admin cannot create exam."""
         user = create_test_user(email='student3@example.com')
         token = Token.objects.create(user=user)
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {token.key}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token.key}')
 
         url = reverse('assessments:admin-exam-list')
         data = {'title': 'Test', 'course': 'CS101', 'duration_minutes': 60}

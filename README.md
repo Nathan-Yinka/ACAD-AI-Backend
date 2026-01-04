@@ -35,8 +35,12 @@ A comprehensive Django-based REST API system for managing academic assessments, 
 
 2. **Set up environment variables**
    ```bash
-   # Copy .env.example if it exists, or create .env file
-   # Minimum required variables:
+   cp .env.example .env
+   # Edit .env file if needed with your configuration
+   ```
+   
+   The `.env` file should contain at minimum:
+   ```env
    SECRET_KEY=your-secret-key-here
    DEBUG=True
    ALLOWED_HOSTS=localhost,127.0.0.1
