@@ -1,0 +1,70 @@
+{
+	"info": {
+		"name": "User Profile",
+		"description": "User profile management endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Current User Profile",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/auth/me/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "auth", "me", ""]
+				},
+				"description": "Retrieve the authenticated user's profile information. Requires authentication."
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/me/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "me", ""]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"success\": true,\n    \"message\": \"User retrieved successfully\",\n    \"data\": {\n        \"id\": 1,\n        \"username\": \"nathan-yinka\",\n        \"email\": \"oludarenathaniel@gmail.com\",\n        \"first_name\": \"\",\n        \"last_name\": \"\",\n        \"is_student\": true,\n        \"created_at\": \"2026-01-04T16:37:16.980527Z\"\n    }\n}"
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
+

@@ -1,0 +1,73 @@
+{
+	"info": {
+		"name": "WebSocket Events",
+		"description": "WebSocket events for real-time exam session notifications. Connect to ws://localhost:8000/ws/exam/{session_token}/?token={auth_token}",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "WebSocket Connection",
+			"request": {
+				"url": {
+					"raw": "ws://localhost:8000/ws/exam/{{session_token}}/?token={{token}}",
+					"protocol": "ws",
+					"host": ["localhost"],
+					"port": "8000",
+					"path": ["ws", "exam", "{{session_token}}", ""],
+					"query": [
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
+					]
+				},
+				"description": "Connect to WebSocket using the session token from the start exam endpoint.\n\n**Connection URL:** `ws://localhost:8000/ws/exam/{session_token}/?token={auth_token}`\n\n**Parameters:**\n- `{session_token}` - Exam session token from `/api/exams/{id}/start/` endpoint\n- `{auth_token}` - Authentication token (Bearer token) from login/register endpoint\n\n**Authentication:** Token-based authentication via query parameter. Use the same authentication token that you use for HTTP API requests.\n\n**Events to Listen For:**\n- `connected` - Connection established\n- `pong` - Response to ping\n- `session_completed` - Session completed (submitted or timeout)\n- `session_expired` - Token expired/invalidated"
+			},
+			"response": []
+		},
+		{
+			"name": "Send Ping Message",
+			"request": {
+				"url": {
+					"raw": "ws://localhost:8000/ws/exam/{{session_token}}/?token={{token}}",
+					"protocol": "ws",
+					"host": ["localhost"],
+					"port": "8000",
+					"path": ["ws", "exam", "{{session_token}}", ""],
+					"query": [
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
+					]
+				},
+				"description": "Send a ping message to check session status and get updated time remaining.\n\n**Message Format:**\n```json\n{\n    \"type\": \"ping\"\n}\n```\n\n**Response:** `pong` event with current session data"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Note: Postman WebSocket requires manual connection",
+					"// Use the WebSocket URL: ws://localhost:8000/ws/exam/{session_token}/?token={auth_token}",
+					"// Replace {session_token} with your session token from /api/exams/{id}/start/",
+					"// Replace {auth_token} with your authentication token from login/register"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "session_token",
+			"value": "",
+			"type": "string",
+			"description": "Session token from start exam endpoint"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
+

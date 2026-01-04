@@ -1,0 +1,237 @@
+{
+	"info": {
+		"name": "Exams",
+		"description": "Student exam listing and session start endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "List Active Exams",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/exams/?page=1",
+					"host": ["{{base_url}}"],
+					"path": ["api", "exams", ""],
+					"query": [
+						{
+							"key": "page",
+							"value": "1",
+							"description": "Page number (pagination)"
+						},
+						{
+							"key": "page_size",
+							"value": "20",
+							"description": "Items per page (default: 20, max: 100)",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Retrieve all active exams. Includes active session info and grade info if exists. Response is paginated."
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/exams/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams", ""]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Exams retrieved successfully\",\n    \"data\": {\n        \"count\": 2,\n        \"next\": null,\n        \"previous\": null,\n        \"results\": [\n            {\n                \"id\": 1,\n                \"title\": \"Python Basics\",\n                \"description\": \"Introduction to Python programming\",\n                \"course\": \"CS101\",\n                \"duration_minutes\": 60,\n                \"questions_count\": 5,\n                \"active_session\": {\n                    \"id\": 1,\n                    \"started_at\": \"2026-01-04T10:00:00Z\",\n                    \"expires_at\": \"2026-01-04T11:00:00Z\",\n                    \"time_remaining_seconds\": 3540,\n                    \"is_expired\": false,\n                    \"answered_count\": 2,\n                    \"total_questions\": 5\n                },\n                \"grade_info\": null\n            },\n            {\n                \"id\": 2,\n                \"title\": \"Django Advanced\",\n                \"description\": \"Advanced Django concepts\",\n                \"course\": \"CS201\",\n                \"duration_minutes\": 90,\n                \"questions_count\": 10,\n                \"active_session\": null,\n                \"grade_info\": {\n                    \"grade_history_id\": 5,\n                    \"total_score\": 85.0,\n                    \"max_score\": 100.0,\n                    \"percentage\": 85.0,\n                    \"status\": \"COMPLETED\"\n                }\n            }\n        ]\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Exam Details",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/exams/1/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "exams", "1", ""]
+				},
+				"description": "Get exam details (without questions). Shows active session and grade info if available."
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/exams/1/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams", "1", ""]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Exam retrieved successfully\",\n    \"data\": {\n        \"id\": 1,\n        \"title\": \"Python Basics\",\n        \"description\": \"Introduction to Python programming\",\n        \"course\": \"CS101\",\n        \"duration_minutes\": 60,\n        \"questions_count\": 5,\n        \"max_score\": 50.0,\n        \"created_at\": \"2026-01-04T08:00:00Z\",\n        \"updated_at\": \"2026-01-04T08:00:00Z\",\n        \"active_session\": {\n            \"id\": 1,\n            \"started_at\": \"2026-01-04T10:00:00Z\",\n            \"expires_at\": \"2026-01-04T11:00:00Z\",\n            \"time_remaining_seconds\": 3540,\n            \"is_expired\": false,\n            \"answered_count\": 2,\n            \"total_questions\": 5\n        },\n        \"grade_info\": null\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Start or Continue Exam Session",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200 || pm.response.code === 201) {",
+							"    var jsonData = pm.response.json();",
+							"    if (jsonData.success && jsonData.data && jsonData.data.token) {",
+							"        var token = jsonData.data.token;",
+							"        if (pm.environment !== null) {",
+							"            pm.environment.set(\"session_token\", token);",
+							"        } else {",
+							"            pm.collectionVariables.set(\"session_token\", token);",
+							"        }",
+							"        console.log(\"Session token saved: \" + token.substring(0, 10) + \"...\");",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/exams/1/start/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "exams", "1", "start", ""]
+				},
+				"description": "Start a new exam session or continue existing one. Returns a new token each time. The session token is automatically saved to the environment variable `session_token` for use in subsequent session requests.\n\n**Note:** If a session already exists, it will be continued with a new token, and old tokens will be invalidated."
+			},
+			"response": [
+				{
+					"name": "New Session Created",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/exams/1/start/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams", "1", "start", ""]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Exam session started\",\n    \"data\": {\n        \"id\": 1,\n        \"exam\": 1,\n        \"started_at\": \"2026-01-04T10:00:00Z\",\n        \"expires_at\": \"2026-01-04T11:00:00Z\",\n        \"is_completed\": false,\n        \"time_remaining_seconds\": 3600,\n        \"is_expired\": false,\n        \"answered_count\": 0,\n        \"total_questions\": 5,\n        \"token\": \"abc123def456ghi789jkl012mno345pqr678stu901vwx234yz\"\n    }\n}"
+				},
+				{
+					"name": "Session Continued",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/exams/1/start/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "exams", "1", "start", ""]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Session continued with new token\",\n    \"data\": {\n        \"id\": 1,\n        \"exam\": 1,\n        \"started_at\": \"2026-01-04T10:00:00Z\",\n        \"expires_at\": \"2026-01-04T11:00:00Z\",\n        \"is_completed\": false,\n        \"time_remaining_seconds\": 3540,\n        \"is_expired\": false,\n        \"answered_count\": 2,\n        \"total_questions\": 5,\n        \"token\": \"new123token456def789ghi012jkl345mno678pqr901stu234vwx\"\n    }\n}"
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "session_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
+

@@ -1,0 +1,131 @@
+{
+	"info": {
+		"name": "Grades",
+		"description": "Student grade history endpoints (scores only)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "List Grade History",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/grades/history/?page=1",
+					"host": ["{{base_url}}"],
+					"path": ["api", "grades", "history", ""],
+					"query": [
+						{
+							"key": "page",
+							"value": "1",
+							"description": "Page number (pagination)"
+						},
+						{
+							"key": "page_size",
+							"value": "20",
+							"description": "Items per page (default: 20, max: 100)",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Retrieve all grade history entries for the authenticated student. Response is paginated. Students only see scores, not detailed answers or questions."
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/grades/history/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "grades", "history", ""]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Grade history retrieved successfully\",\n    \"data\": {\n        \"count\": 2,\n        \"next\": null,\n        \"previous\": null,\n        \"results\": [\n            {\n                \"id\": 25,\n                \"exam_title\": \"Python Basics\",\n                \"exam_id\": 1,\n                \"status\": \"COMPLETED\",\n                \"total_score\": 85.0,\n                \"max_score\": 100.0,\n                \"percentage\": 85.0,\n                \"graded_at\": \"2026-01-04T10:30:00Z\",\n                \"created_at\": \"2026-01-04T10:30:00Z\"\n            },\n            {\n                \"id\": 24,\n                \"exam_title\": \"Django Advanced\",\n                \"exam_id\": 2,\n                \"status\": \"COMPLETED\",\n                \"total_score\": 92.5,\n                \"max_score\": 100.0,\n                \"percentage\": 92.5,\n                \"graded_at\": \"2026-01-03T15:20:00Z\",\n                \"created_at\": \"2026-01-03T15:20:00Z\"\n            }\n        ]\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Grade Detail",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/grades/history/25/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "grades", "history", "25", ""]
+				},
+				"description": "Retrieve detailed information about a specific grade history entry. Students only see per-question scores, not detailed answers or expected answers."
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/grades/history/25/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "grades", "history", "25", ""]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Grade detail retrieved successfully\",\n    \"data\": {\n        \"id\": 25,\n        \"exam_title\": \"Python Basics\",\n        \"exam_id\": 1,\n        \"status\": \"COMPLETED\",\n        \"total_score\": 85.0,\n        \"max_score\": 100.0,\n        \"percentage\": 85.0,\n        \"question_scores\": [\n            {\n                \"question_order\": 1,\n                \"score\": 8.5,\n                \"max_score\": 10.0\n            },\n            {\n                \"question_order\": 2,\n                \"score\": 20.0,\n                \"max_score\": 20.0\n            },\n            {\n                \"question_order\": 3,\n                \"score\": 15.0,\n                \"max_score\": 20.0\n            },\n            {\n                \"question_order\": 4,\n                \"score\": 18.0,\n                \"max_score\": 20.0\n            },\n            {\n                \"question_order\": 5,\n                \"score\": 23.5,\n                \"max_score\": 30.0\n            }\n        ],\n        \"graded_at\": \"2026-01-04T10:30:00Z\",\n        \"created_at\": \"2026-01-04T10:30:00Z\"\n    }\n}"
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
+

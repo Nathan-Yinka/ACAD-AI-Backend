@@ -1,0 +1,214 @@
+{
+	"info": {
+		"name": "Admin - Exams",
+		"description": "Admin endpoints for exam management (create, update, delete, activate/deactivate). Requires admin authentication.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "List All Exams",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/admin/exams/?page=1",
+					"host": ["{{base_url}}"],
+					"path": ["api", "admin", "exams", ""],
+					"query": [
+						{
+							"key": "page",
+							"value": "1",
+							"description": "Page number (pagination)"
+						}
+					]
+				},
+				"description": "Retrieve a paginated list of all exams (admin only). Includes both active and inactive exams."
+			},
+			"response": []
+		},
+		{
+			"name": "Create Exam",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Python Basics\",\n    \"description\": \"Introduction to Python programming\",\n    \"course\": \"CS101\",\n    \"duration_minutes\": 60,\n    \"is_active\": false\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/admin/exams/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "admin", "exams", ""]
+				},
+				"description": "Create a new exam (admin only).\n\n**Required Fields:**\n- `title`: Exam title\n- `course`: Course code/name\n- `duration_minutes`: Duration in minutes (minimum 1)\n\n**Optional Fields:**\n- `description`: Exam description\n- `is_active`: Boolean (default: true)"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Exam Details",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/admin/exams/1/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "admin", "exams", "1", ""]
+				},
+				"description": "Retrieve detailed information about a specific exam including questions and expected answers (admin only)."
+			},
+			"response": []
+		},
+		{
+			"name": "Update Exam",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Python Basics - Updated\",\n    \"description\": \"Updated description\",\n    \"course\": \"CS101\",\n    \"duration_minutes\": 90,\n    \"is_active\": true\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/admin/exams/1/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "admin", "exams", "1", ""]
+				},
+				"description": "Update exam details including making it active/inactive (admin only).\n\n**Note:** Cannot update an exam that has active sessions or submissions."
+			},
+			"response": []
+		},
+		{
+			"name": "Partial Update Exam",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"duration_minutes\": 75\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/admin/exams/1/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "admin", "exams", "1", ""]
+				},
+				"description": "Partially update exam details (admin only).\n\n**Note:** Cannot update an exam that has active sessions or submissions."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Exam",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/admin/exams/1/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "admin", "exams", "1", ""]
+				},
+				"description": "Delete an exam (admin only).\n\n**Note:** Cannot delete an exam that has active sessions or submissions."
+			},
+			"response": []
+		},
+		{
+			"name": "Activate Exam",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/admin/exams/1/activate/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "admin", "exams", "1", "activate", ""]
+				},
+				"description": "Make an exam active and available for students."
+			},
+			"response": []
+		},
+		{
+			"name": "Deactivate Exam",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/admin/exams/1/deactivate/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "admin", "exams", "1", "deactivate", ""]
+				},
+				"description": "Make an exam inactive and unavailable for students."
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "",
+			"description": "Admin authentication token",
+			"type": "string"
+		}
+	]
+}
+

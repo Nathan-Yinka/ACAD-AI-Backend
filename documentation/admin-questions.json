@@ -1,0 +1,223 @@
+{
+	"info": {
+		"name": "Admin - Questions",
+		"description": "Admin endpoints for question management within exams. Requires admin authentication.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "List Questions for Exam",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/admin/exams/1/questions/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "admin", "exams", "1", "questions", ""]
+				},
+				"description": "Retrieve all questions for a specific exam (admin only). Questions are ordered by their `order` field."
+			},
+			"response": []
+		},
+		{
+			"name": "Create Question - Short Answer",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"question_text\": \"What is Python?\",\n    \"question_type\": \"SHORT_ANSWER\",\n    \"points\": 10,\n    \"order\": 1,\n    \"expected_answer\": \"Python is a programming language\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/admin/exams/1/questions/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "admin", "exams", "1", "questions", ""]
+				},
+				"description": "Add a new short answer question to an exam (admin only).\n\n**Required Fields:**\n- `question_text`: The question text\n- `question_type`: \"SHORT_ANSWER\", \"ESSAY\", or \"MULTIPLE_CHOICE\"\n- `points`: Points for this question (minimum 1)\n- `order`: Question order within the exam\n- `expected_answer`: Expected answer for grading\n\n**Note:** Cannot add questions to an exam that has active sessions or submissions."
+			},
+			"response": []
+		},
+		{
+			"name": "Create Question - Multiple Choice (Single)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"question_text\": \"Which is a Python framework?\",\n    \"question_type\": \"MULTIPLE_CHOICE\",\n    \"points\": 20,\n    \"order\": 2,\n    \"options\": [\n        {\"label\": \"A\", \"value\": \"Django\"},\n        {\"label\": \"B\", \"value\": \"React\"},\n        {\"label\": \"C\", \"value\": \"Angular\"},\n        {\"label\": \"D\", \"value\": \"Vue\"}\n    ],\n    \"allow_multiple\": false,\n    \"expected_answer\": \"A\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/admin/exams/1/questions/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "admin", "exams", "1", "questions", ""]
+				},
+				"description": "Add a multiple choice question with single answer selection.\n\n**For MULTIPLE_CHOICE questions:**\n- `options`: JSON array of objects with `label` and `value` keys (minimum 2 options)\n- `allow_multiple`: false for single selection\n- `expected_answer`: The option value (e.g., \"A\")"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Question - Multiple Choice (Multiple)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"question_text\": \"Which are Python frameworks?\",\n    \"question_type\": \"MULTIPLE_CHOICE\",\n    \"points\": 25,\n    \"order\": 3,\n    \"options\": [\n        {\"label\": \"A\", \"value\": \"Django\"},\n        {\"label\": \"B\", \"value\": \"Flask\"},\n        {\"label\": \"C\", \"value\": \"React\"},\n        {\"label\": \"D\", \"value\": \"Vue\"}\n    ],\n    \"allow_multiple\": true,\n    \"expected_answer\": \"[\\\"A\\\", \\\"B\\\"]\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/admin/exams/1/questions/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "admin", "exams", "1", "questions", ""]
+				},
+				"description": "Add a multiple choice question with multiple answer selection.\n\n**For MULTIPLE_CHOICE with allow_multiple=true:**\n- `options`: JSON array of objects with `label` and `value` keys\n- `allow_multiple`: true for multiple selection\n- `expected_answer`: JSON array string of option values (e.g., `\"[\\\"A\\\", \\\"B\\\"]\"`)"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Question Details",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/admin/exams/1/questions/5/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "admin", "exams", "1", "questions", "5", ""]
+				},
+				"description": "Retrieve detailed information about a specific question (admin only)."
+			},
+			"response": []
+		},
+		{
+			"name": "Update Question",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"question_text\": \"What is Python? (Updated)\",\n    \"question_type\": \"SHORT_ANSWER\",\n    \"points\": 15,\n    \"order\": 1,\n    \"expected_answer\": \"Python is a high-level programming language\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/admin/exams/1/questions/5/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "admin", "exams", "1", "questions", "5", ""]
+				},
+				"description": "Update question details (admin only).\n\n**Note:** Cannot modify questions for an exam that has active sessions or submissions."
+			},
+			"response": []
+		},
+		{
+			"name": "Partial Update Question",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"points\": 20\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/admin/exams/1/questions/5/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "admin", "exams", "1", "questions", "5", ""]
+				},
+				"description": "Partially update question details (admin only).\n\n**Note:** Cannot modify questions for an exam that has active sessions or submissions."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Question",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/admin/exams/1/questions/5/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "admin", "exams", "1", "questions", "5", ""]
+				},
+				"description": "Delete a question from an exam (admin only).\n\n**Note:** Cannot delete questions from an exam that has active sessions or submissions."
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "",
+			"description": "Admin authentication token",
+			"type": "string"
+		}
+	]
+}
+

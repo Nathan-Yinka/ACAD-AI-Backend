@@ -1,0 +1,302 @@
+{
+	"info": {
+		"name": "Exam Session",
+		"description": "Exam session endpoints - questions and answers. All endpoints require a valid session token.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Question by Order",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/sessions/{{session_token}}/questions/1/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "sessions", "{{session_token}}", "questions", "1", ""]
+				},
+				"description": "Fetch a specific question by order number using session token. Returns the question, any saved answer, and current progress."
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/sessions/{{session_token}}/questions/1/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sessions", "{{session_token}}", "questions", "1", ""]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Question retrieved successfully\",\n    \"data\": {\n        \"id\": 1,\n        \"question_text\": \"What is Python?\",\n        \"question_type\": \"SHORT_ANSWER\",\n        \"points\": 10,\n        \"order\": 1,\n        \"options\": null,\n        \"allow_multiple\": false,\n        \"saved_answer\": \"Python is a programming language\",\n        \"progress\": {\n            \"answered_count\": 2,\n            \"total_questions\": 5,\n            \"time_remaining_seconds\": 3540\n        }\n    }\n}"
+				},
+				{
+					"name": "Multiple Choice Question",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/sessions/{{session_token}}/questions/2/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sessions", "{{session_token}}", "questions", "2", ""]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Question retrieved successfully\",\n    \"data\": {\n        \"id\": 2,\n        \"question_text\": \"Which are Python frameworks?\",\n        \"question_type\": \"MULTIPLE_CHOICE\",\n        \"points\": 20,\n        \"order\": 2,\n        \"options\": [\n            {\"label\": \"A\", \"value\": \"Django\"},\n            {\"label\": \"B\", \"value\": \"Flask\"},\n            {\"label\": \"C\", \"value\": \"React\"},\n            {\"label\": \"D\", \"value\": \"Vue\"}\n        ],\n        \"allow_multiple\": true,\n        \"saved_answer\": null,\n        \"progress\": {\n            \"answered_count\": 1,\n            \"total_questions\": 5,\n            \"time_remaining_seconds\": 3480\n        }\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Submit Answer",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"answer_text\": \"Python is a high-level programming language\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/sessions/{{session_token}}/questions/1/answer/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "sessions", "{{session_token}}", "questions", "1", "answer", ""]
+				},
+				"description": "Submit an answer for a specific question using session token.\n\n**For Multiple Choice Questions:**\n- Single answer: `\"answer_text\": \"A\"`\n- Multiple answers: `\"answer_text\": \"[\"A\", \"B\"]\"` (JSON array as string)\n\n**For Short Answer/Essay:**\n- Plain text: `\"answer_text\": \"Your answer here\"`"
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"answer_text\": \"Python is a high-level programming language\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sessions/{{session_token}}/questions/1/answer/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sessions", "{{session_token}}", "questions", "1", "answer", ""]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Answer submitted successfully\",\n    \"data\": {\n        \"question_order\": 1,\n        \"answer_text\": \"Python is a high-level programming language\",\n        \"answered_at\": \"2026-01-04T10:15:30Z\",\n        \"progress\": {\n            \"answered_count\": 3,\n            \"total_questions\": 5,\n            \"time_remaining_seconds\": 3420\n        }\n    }\n}"
+				},
+				{
+					"name": "Multiple Choice Answer",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"answer_text\": \"[\\\"A\\\", \\\"B\\\"]\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sessions/{{session_token}}/questions/2/answer/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sessions", "{{session_token}}", "questions", "2", "answer", ""]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Answer submitted successfully\",\n    \"data\": {\n        \"question_order\": 2,\n        \"answer_text\": \"[\\\"A\\\", \\\"B\\\"]\",\n        \"answered_at\": \"2026-01-04T10:16:00Z\",\n        \"progress\": {\n            \"answered_count\": 4,\n            \"total_questions\": 5,\n            \"time_remaining_seconds\": 3360\n        }\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Session Progress",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/sessions/{{session_token}}/progress/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "sessions", "{{session_token}}", "progress", ""]
+				},
+				"description": "Get progress info including answered questions and time remaining."
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/sessions/{{session_token}}/progress/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sessions", "{{session_token}}", "progress", ""]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Progress retrieved successfully\",\n    \"data\": {\n        \"answered_count\": 3,\n        \"total_questions\": 5,\n        \"time_remaining_seconds\": 3420,\n        \"is_expired\": false,\n        \"started_at\": \"2026-01-04T10:00:00Z\",\n        \"expires_at\": \"2026-01-04T11:00:00Z\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Submit Exam Session",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/sessions/{{session_token}}/submit/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "sessions", "{{session_token}}", "submit", ""]
+				},
+				"description": "Submit the exam session for grading. This will automatically trigger grading and return the grade history ID. The session will be marked as completed."
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/sessions/{{session_token}}/submit/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sessions", "{{session_token}}", "submit", ""]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Exam submitted and graded successfully\",\n    \"data\": {\n        \"grade_history_id\": 25,\n        \"status\": \"COMPLETED\",\n        \"total_score\": 85.0,\n        \"max_score\": 100.0,\n        \"percentage\": 85.0\n    }\n}"
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "session_token",
+			"value": "",
+			"description": "Session token from start exam endpoint",
+			"type": "string"
+		}
+	]
+}
+
