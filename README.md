@@ -54,9 +54,9 @@ A comprehensive Django-based REST API system for managing academic assessments, 
    This will start all services in the foreground so you can see the logs. Press `Ctrl+C` to stop all services.
 
 4. **Access the application**
-   - API: http://localhost:8000/api/
-   - Swagger UI: http://localhost:8000/api/docs/
-   - ReDoc: http://localhost:8000/api/redoc/
+   - API: http://localhost:8000/api/v1/
+   - Swagger UI: http://localhost:8000/api/v1/docs/
+   - ReDoc: http://localhost:8000/api/v1/redoc/
    - Admin: http://localhost:8000/admin/
 
 **Stop services:**
@@ -202,9 +202,9 @@ For local development without Docker:
    - Start Django with Daphne (WebSocket support)
 
 9. **Access the application**
-   - API: http://localhost:8000/api/
-   - Swagger UI: http://localhost:8000/api/docs/
-   - ReDoc: http://localhost:8000/api/redoc/
+   - API: http://localhost:8000/api/v1/
+   - Swagger UI: http://localhost:8000/api/v1/docs/
+   - ReDoc: http://localhost:8000/api/v1/redoc/
    - Admin: http://localhost:8000/admin/
 
 **Important Notes:**
@@ -343,22 +343,22 @@ See [Database Schema](#database-schema) for detailed information.
 
 The API includes comprehensive interactive documentation:
 
-- **Swagger UI**: http://localhost:8000/api/docs/
-- **ReDoc**: http://localhost:8000/api/redoc/
-- **OpenAPI Schema**: http://localhost:8000/api/schema/
+- **Swagger UI**: http://localhost:8000/api/v1/docs/
+- **ReDoc**: http://localhost:8000/api/v1/redoc/
+- **OpenAPI Schema**: http://localhost:8000/api/v1/schema/
 
 ### API Overview
 
 The API is organized into the following endpoint groups:
 
-- **Authentication** (`/api/auth/`) - Registration, login, profile management
-- **Exams** (`/api/exams/`) - List exams, start exam sessions (students)
-- **Exam Session** (`/api/sessions/`) - Get questions, submit answers, track progress
-- **Grades** (`/api/grades/`) - View grade history (students)
-- **Admin - Exams** (`/api/admin/exams/`) - CRUD operations for exams
-- **Admin - Questions** (`/api/admin/exams/{id}/questions/`) - Manage questions
-- **Admin - Sessions** (`/api/admin/sessions/`) - View all sessions
-- **Admin - Grades** (`/api/admin/grades/`) - View all grades with details
+- **Authentication** (`/api/v1/auth`) - Registration, login, profile management
+- **Exams** (`/api/v1/exams`) - List exams, start exam sessions (students)
+- **Exam Session** (`/api/v1/sessions`) - Get questions, submit answers, track progress
+- **Grades** (`/api/v1/grades`) - View grade history (students)
+- **Admin - Exams** (`/api/v1/admin/exams`) - CRUD operations for exams
+- **Admin - Questions** (`/api/v1/admin/exams/{id}/questions`) - Manage questions
+- **Admin - Sessions** (`/api/v1/admin/sessions`) - View all sessions
+- **Admin - Grades** (`/api/v1/admin/grades`) - View all grades with details
 
 ### Authentication
 
@@ -368,7 +368,7 @@ All API endpoints (except registration and login) require authentication using T
 Authorization: Bearer <your-token>
 ```
 
-Tokens are obtained from the `/api/auth/login/` or `/api/auth/register/` endpoints.
+Tokens are obtained from the `/api/v1/auth/login` or `/api/v1/auth/register` endpoints.
 
 ### WebSocket Connection
 
@@ -379,7 +379,7 @@ ws://localhost:8000/ws/exam/{session_token}/?token={auth_token}
 ```
 
 **Parameters:**
-- `session_token` - Token from `/api/exams/{id}/start/` endpoint
+- `session_token` - Token from `/api/v1/exams/{id}/start` endpoint
 - `auth_token` - Authentication token (query parameter)
 
 **Events:**
@@ -388,7 +388,7 @@ ws://localhost:8000/ws/exam/{session_token}/?token={auth_token}
 - `session_completed` - Exam submitted/completed
 - `session_expired` - Session expired or invalidated
 
-**For detailed endpoint documentation, request/response examples, and Postman collections, see the `/documentation/` folder or visit the interactive Swagger UI at `/api/docs/`.**
+**For detailed endpoint documentation, request/response examples, and Postman collections, see the `/documentation/` folder or visit the interactive Swagger UI at `/api/v1/docs/`.**
 
 ## 🗄 Database Schema
 

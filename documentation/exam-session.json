@@ -17,9 +17,18 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/api/sessions/{{session_token}}/questions/1/",
-					"host": ["{{base_url}}"],
-					"path": ["api", "sessions", "{{session_token}}", "questions", "1", ""]
+					"raw": "{{base_url}}/api/v1/sessions/{{session_token}}/questions/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"sessions",
+						"{{session_token}}",
+						"questions",
+						"1"
+					]
 				},
 				"description": "Fetch a specific question by order number using session token. Returns the question, any saved answer, and current progress."
 			},
@@ -35,9 +44,18 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/sessions/{{session_token}}/questions/1/",
-							"host": ["{{base_url}}"],
-							"path": ["api", "sessions", "{{session_token}}", "questions", "1", ""]
+							"raw": "{{base_url}}/api/v1/sessions/{{session_token}}/questions/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"sessions",
+								"{{session_token}}",
+								"questions",
+								"1"
+							]
 						}
 					},
 					"status": "OK",
@@ -62,9 +80,18 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/sessions/{{session_token}}/questions/2/",
-							"host": ["{{base_url}}"],
-							"path": ["api", "sessions", "{{session_token}}", "questions", "2", ""]
+							"raw": "{{base_url}}/api/v1/sessions/{{session_token}}/questions/2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"sessions",
+								"{{session_token}}",
+								"questions",
+								"2"
+							]
 						}
 					},
 					"status": "OK",
@@ -100,9 +127,19 @@
 					"raw": "{\n    \"answer_text\": \"Python is a high-level programming language\"\n}"
 				},
 				"url": {
-					"raw": "{{base_url}}/api/sessions/{{session_token}}/questions/1/answer/",
-					"host": ["{{base_url}}"],
-					"path": ["api", "sessions", "{{session_token}}", "questions", "1", "answer", ""]
+					"raw": "{{base_url}}/api/v1/sessions/{{session_token}}/questions/1/answer",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"sessions",
+						"{{session_token}}",
+						"questions",
+						"1",
+						"answer"
+					]
 				},
 				"description": "Submit an answer for a specific question using session token.\n\n**For Multiple Choice Questions:**\n- Single answer: `\"answer_text\": \"A\"`\n- Multiple answers: `\"answer_text\": \"[\"A\", \"B\"]\"` (JSON array as string)\n\n**For Short Answer/Essay:**\n- Plain text: `\"answer_text\": \"Your answer here\"`"
 			},
@@ -126,9 +163,19 @@
 							"raw": "{\n    \"answer_text\": \"Python is a high-level programming language\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/sessions/{{session_token}}/questions/1/answer/",
-							"host": ["{{base_url}}"],
-							"path": ["api", "sessions", "{{session_token}}", "questions", "1", "answer", ""]
+							"raw": "{{base_url}}/api/v1/sessions/{{session_token}}/questions/1/answer",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"sessions",
+								"{{session_token}}",
+								"questions",
+								"1",
+								"answer"
+							]
 						}
 					},
 					"status": "OK",
@@ -161,9 +208,19 @@
 							"raw": "{\n    \"answer_text\": \"[\\\"A\\\", \\\"B\\\"]\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/sessions/{{session_token}}/questions/2/answer/",
-							"host": ["{{base_url}}"],
-							"path": ["api", "sessions", "{{session_token}}", "questions", "2", "answer", ""]
+							"raw": "{{base_url}}/api/v1/sessions/{{session_token}}/questions/2/answer",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"sessions",
+								"{{session_token}}",
+								"questions",
+								"2",
+								"answer"
+							]
 						}
 					},
 					"status": "OK",
@@ -191,9 +248,17 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/api/sessions/{{session_token}}/progress/",
-					"host": ["{{base_url}}"],
-					"path": ["api", "sessions", "{{session_token}}", "progress", ""]
+					"raw": "{{base_url}}/api/v1/sessions/{{session_token}}/progress",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"sessions",
+						"{{session_token}}",
+						"progress"
+					]
 				},
 				"description": "Get progress info including answered questions and time remaining."
 			},
@@ -209,9 +274,17 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/sessions/{{session_token}}/progress/",
-							"host": ["{{base_url}}"],
-							"path": ["api", "sessions", "{{session_token}}", "progress", ""]
+							"raw": "{{base_url}}/api/v1/sessions/{{session_token}}/progress",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"sessions",
+								"{{session_token}}",
+								"progress"
+							]
 						}
 					},
 					"status": "OK",
@@ -243,9 +316,17 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/api/sessions/{{session_token}}/submit/",
-					"host": ["{{base_url}}"],
-					"path": ["api", "sessions", "{{session_token}}", "submit", ""]
+					"raw": "{{base_url}}/api/v1/sessions/{{session_token}}/submit",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"sessions",
+						"{{session_token}}",
+						"submit"
+					]
 				},
 				"description": "Submit the exam session for grading. This will automatically trigger grading and return the grade history ID. The session will be marked as completed."
 			},
@@ -261,9 +342,17 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/sessions/{{session_token}}/submit/",
-							"host": ["{{base_url}}"],
-							"path": ["api", "sessions", "{{session_token}}", "submit", ""]
+							"raw": "{{base_url}}/api/v1/sessions/{{session_token}}/submit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"sessions",
+								"{{session_token}}",
+								"submit"
+							]
 						}
 					},
 					"status": "OK",
@@ -299,4 +388,3 @@
 		}
 	]
 }
-

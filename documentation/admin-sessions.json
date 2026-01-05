@@ -17,9 +17,19 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/api/grades/admin/exams/1/sessions/?page=1",
-					"host": ["{{base_url}}"],
-					"path": ["api", "grades", "admin", "exams", "1", "sessions", ""],
+					"raw": "{{base_url}}/api/v1/grades/admin/exams/1/sessions?page=1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"grades",
+						"admin",
+						"exams",
+						"1",
+						"sessions"
+					],
 					"query": [
 						{
 							"key": "page",
@@ -42,9 +52,19 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/grades/admin/exams/1/sessions/",
-							"host": ["{{base_url}}"],
-							"path": ["api", "grades", "admin", "exams", "1", "sessions", ""]
+							"raw": "{{base_url}}/api/v1/grades/admin/exams/1/sessions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"grades",
+								"admin",
+								"exams",
+								"1",
+								"sessions"
+							]
 						}
 					},
 					"status": "OK",
@@ -72,9 +92,18 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/api/grades/admin/sessions/1/",
-					"host": ["{{base_url}}"],
-					"path": ["api", "grades", "admin", "sessions", "1", ""]
+					"raw": "{{base_url}}/api/v1/grades/admin/sessions/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"grades",
+						"admin",
+						"sessions",
+						"1"
+					]
 				},
 				"description": "View detailed session including all student answers and questions. Admin can see the full question payload and student answers."
 			},
@@ -90,9 +119,18 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/grades/admin/sessions/1/",
-							"host": ["{{base_url}}"],
-							"path": ["api", "grades", "admin", "sessions", "1", ""]
+							"raw": "{{base_url}}/api/v1/grades/admin/sessions/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"grades",
+								"admin",
+								"sessions",
+								"1"
+							]
 						}
 					},
 					"status": "OK",
@@ -123,4 +161,3 @@
 		}
 	]
 }
-

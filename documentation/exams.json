@@ -17,9 +17,15 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/api/exams/?page=1",
-					"host": ["{{base_url}}"],
-					"path": ["api", "exams", ""],
+					"raw": "{{base_url}}/api/v1/exams?page=1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"exams"
+					],
 					"query": [
 						{
 							"key": "page",
@@ -48,9 +54,15 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/exams/",
-							"host": ["{{base_url}}"],
-							"path": ["api", "exams", ""]
+							"raw": "{{base_url}}/api/v1/exams",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"exams"
+							]
 						}
 					},
 					"status": "OK",
@@ -78,9 +90,16 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/api/exams/1/",
-					"host": ["{{base_url}}"],
-					"path": ["api", "exams", "1", ""]
+					"raw": "{{base_url}}/api/v1/exams/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"exams",
+						"1"
+					]
 				},
 				"description": "Get exam details (without questions). Shows active session and grade info if available."
 			},
@@ -96,9 +115,16 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/exams/1/",
-							"host": ["{{base_url}}"],
-							"path": ["api", "exams", "1", ""]
+							"raw": "{{base_url}}/api/v1/exams/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"exams",
+								"1"
+							]
 						}
 					},
 					"status": "OK",
@@ -152,9 +178,17 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/api/exams/1/start/",
-					"host": ["{{base_url}}"],
-					"path": ["api", "exams", "1", "start", ""]
+					"raw": "{{base_url}}/api/v1/exams/1/start",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"exams",
+						"1",
+						"start"
+					]
 				},
 				"description": "Start a new exam session or continue existing one. Returns a new token each time. The session token is automatically saved to the environment variable `session_token` for use in subsequent session requests.\n\n**Note:** If a session already exists, it will be continued with a new token, and old tokens will be invalidated."
 			},
@@ -170,9 +204,17 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/exams/1/start/",
-							"host": ["{{base_url}}"],
-							"path": ["api", "exams", "1", "start", ""]
+							"raw": "{{base_url}}/api/v1/exams/1/start",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"exams",
+								"1",
+								"start"
+							]
 						}
 					},
 					"status": "Created",
@@ -197,9 +239,17 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/exams/1/start/",
-							"host": ["{{base_url}}"],
-							"path": ["api", "exams", "1", "start", ""]
+							"raw": "{{base_url}}/api/v1/exams/1/start",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"exams",
+								"1",
+								"start"
+							]
 						}
 					},
 					"status": "OK",
@@ -234,4 +284,3 @@
 		}
 	]
 }
-

@@ -17,9 +17,16 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/api/auth/me/",
-					"host": ["{{base_url}}"],
-					"path": ["api", "auth", "me", ""]
+					"raw": "{{base_url}}/api/v1/auth/me",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"me"
+					]
 				},
 				"description": "Retrieve the authenticated user's profile information. Requires authentication."
 			},
@@ -35,9 +42,16 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/auth/me/",
-							"host": ["{{base_url}}"],
-							"path": ["api", "auth", "me", ""]
+							"raw": "{{base_url}}/api/v1/auth/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"me"
+							]
 						}
 					},
 					"status": "OK",
@@ -67,4 +81,3 @@
 		}
 	]
 }
-

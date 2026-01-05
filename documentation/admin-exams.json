@@ -17,9 +17,16 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/api/admin/exams/?page=1",
-					"host": ["{{base_url}}"],
-					"path": ["api", "admin", "exams", ""],
+					"raw": "{{base_url}}/api/v1/admin/exams?page=1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"admin",
+						"exams"
+					],
 					"query": [
 						{
 							"key": "page",
@@ -52,9 +59,16 @@
 					"raw": "{\n    \"title\": \"Python Basics\",\n    \"description\": \"Introduction to Python programming\",\n    \"course\": \"CS101\",\n    \"duration_minutes\": 60,\n    \"is_active\": false\n}"
 				},
 				"url": {
-					"raw": "{{base_url}}/api/admin/exams/",
-					"host": ["{{base_url}}"],
-					"path": ["api", "admin", "exams", ""]
+					"raw": "{{base_url}}/api/v1/admin/exams",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"admin",
+						"exams"
+					]
 				},
 				"description": "Create a new exam (admin only).\n\n**Required Fields:**\n- `title`: Exam title\n- `course`: Course code/name\n- `duration_minutes`: Duration in minutes (minimum 1)\n\n**Optional Fields:**\n- `description`: Exam description\n- `is_active`: Boolean (default: true)"
 			},
@@ -72,9 +86,17 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/api/admin/exams/1/",
-					"host": ["{{base_url}}"],
-					"path": ["api", "admin", "exams", "1", ""]
+					"raw": "{{base_url}}/api/v1/admin/exams/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"admin",
+						"exams",
+						"1"
+					]
 				},
 				"description": "Retrieve detailed information about a specific exam including questions and expected answers (admin only)."
 			},
@@ -100,9 +122,17 @@
 					"raw": "{\n    \"title\": \"Python Basics - Updated\",\n    \"description\": \"Updated description\",\n    \"course\": \"CS101\",\n    \"duration_minutes\": 90,\n    \"is_active\": true\n}"
 				},
 				"url": {
-					"raw": "{{base_url}}/api/admin/exams/1/",
-					"host": ["{{base_url}}"],
-					"path": ["api", "admin", "exams", "1", ""]
+					"raw": "{{base_url}}/api/v1/admin/exams/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"admin",
+						"exams",
+						"1"
+					]
 				},
 				"description": "Update exam details including making it active/inactive (admin only).\n\n**Note:** Cannot update an exam that has active sessions or submissions."
 			},
@@ -128,9 +158,17 @@
 					"raw": "{\n    \"duration_minutes\": 75\n}"
 				},
 				"url": {
-					"raw": "{{base_url}}/api/admin/exams/1/",
-					"host": ["{{base_url}}"],
-					"path": ["api", "admin", "exams", "1", ""]
+					"raw": "{{base_url}}/api/v1/admin/exams/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"admin",
+						"exams",
+						"1"
+					]
 				},
 				"description": "Partially update exam details (admin only).\n\n**Note:** Cannot update an exam that has active sessions or submissions."
 			},
@@ -148,9 +186,17 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/api/admin/exams/1/",
-					"host": ["{{base_url}}"],
-					"path": ["api", "admin", "exams", "1", ""]
+					"raw": "{{base_url}}/api/v1/admin/exams/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"admin",
+						"exams",
+						"1"
+					]
 				},
 				"description": "Delete an exam (admin only).\n\n**Note:** Cannot delete an exam that has active sessions or submissions."
 			},
@@ -168,9 +214,18 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/api/admin/exams/1/activate/",
-					"host": ["{{base_url}}"],
-					"path": ["api", "admin", "exams", "1", "activate", ""]
+					"raw": "{{base_url}}/api/v1/admin/exams/1/activate",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"admin",
+						"exams",
+						"1",
+						"activate"
+					]
 				},
 				"description": "Make an exam active and available for students."
 			},
@@ -188,9 +243,18 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/api/admin/exams/1/deactivate/",
-					"host": ["{{base_url}}"],
-					"path": ["api", "admin", "exams", "1", "deactivate", ""]
+					"raw": "{{base_url}}/api/v1/admin/exams/1/deactivate",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"admin",
+						"exams",
+						"1",
+						"deactivate"
+					]
 				},
 				"description": "Make an exam inactive and unavailable for students."
 			},
@@ -211,4 +275,3 @@
 		}
 	]
 }
-

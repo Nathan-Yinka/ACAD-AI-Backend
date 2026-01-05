@@ -142,37 +142,18 @@ class SessionSubmitView(generics.GenericAPIView):
             return StandardResponse.error(message=str(e), status_code=status.HTTP_400_BAD_REQUEST)
 
         try:
-            from apps.grading.services import GradingService
-            from channels.layers import get_channel_layer
-            from asgiref.sync import async_to_sync
-
-            grade_history = GradingService.grade_session(session, grading_method='manual')
-
-            # Notify via WebSocket
-            try:
-                channel_layer = get_channel_layer()
-                if channel_layer:
-                    async_to_sync(channel_layer.group_send)(
-                        f'exam_session_{token}',
-                        {
-                            'type': 'session_completed',
-                            'message': 'Exam submitted successfully',
-                            'reason': 'submitted',
-                            'grade_history_id': grade_history.id,
-                        }
-                    )
-            except Exception:
-                pass
-
+            from apps.grading.tasks import grade_submitted_session
+            
+            session.mark_completed(submission_type='MANUAL')
+            
+            grade_submitted_session.delay(session.id, token)
+            
             return StandardResponse.success(
                 data={
-                    'grade_history_id': grade_history.id,
-                    'status': grade_history.status,
-                    'total_score': float(grade_history.total_score),
-                    'max_score': float(grade_history.max_score),
-                    'percentage': float(grade_history.percentage),
+                    'session_id': session.id,
+                    'status': 'submitted',
                 },
-                message='Exam submitted and graded successfully'
+                message='Exam submitted successfully. Grading in progress.'
             )
         except Exception as e:
             logger.exception(f'Error submitting session: {e}')

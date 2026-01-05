@@ -17,9 +17,16 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/api/grades/history/?page=1",
-					"host": ["{{base_url}}"],
-					"path": ["api", "grades", "history", ""],
+					"raw": "{{base_url}}/api/v1/grades/history?page=1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"grades",
+						"history"
+					],
 					"query": [
 						{
 							"key": "page",
@@ -48,9 +55,16 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/grades/history/",
-							"host": ["{{base_url}}"],
-							"path": ["api", "grades", "history", ""]
+							"raw": "{{base_url}}/api/v1/grades/history",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"grades",
+								"history"
+							]
 						}
 					},
 					"status": "OK",
@@ -78,9 +92,17 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/api/grades/history/25/",
-					"host": ["{{base_url}}"],
-					"path": ["api", "grades", "history", "25", ""]
+					"raw": "{{base_url}}/api/v1/grades/history/25",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"grades",
+						"history",
+						"25"
+					]
 				},
 				"description": "Retrieve detailed information about a specific grade history entry. Students only see per-question scores, not detailed answers or expected answers."
 			},
@@ -96,9 +118,17 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/grades/history/25/",
-							"host": ["{{base_url}}"],
-							"path": ["api", "grades", "history", "25", ""]
+							"raw": "{{base_url}}/api/v1/grades/history/25",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"grades",
+								"history",
+								"25"
+							]
 						}
 					},
 					"status": "OK",
@@ -128,4 +158,3 @@
 		}
 	]
 }
-

@@ -1,4 +1,5 @@
 """Admin serializers for the assessments app."""
+from django.db import models
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field
 from ..models import Exam, Question
@@ -12,7 +13,17 @@ class AdminQuestionSerializer(serializers.ModelSerializer):
             'id', 'exam', 'question_text', 'question_type',
             'expected_answer', 'options', 'allow_multiple', 'points', 'order'
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'exam', 'order')
+    
+    def create(self, validated_data):
+        """Auto-increment order based on existing questions for the exam."""
+        exam = self.context.get('exam') or validated_data.get('exam')
+        if not exam:
+            raise serializers.ValidationError({'exam': 'Exam is required'})
+        max_order = exam.questions.aggregate(max_order=models.Max('order'))['max_order']
+        validated_data['order'] = (max_order or 0) + 1
+        validated_data['exam'] = exam
+        return super().create(validated_data)
     
     def validate(self, data):
         """Validate question based on type."""
@@ -83,7 +94,12 @@ class AdminExamSerializer(serializers.ModelSerializer):
             'id', 'title', 'description', 'duration_minutes',
             'course', 'is_active', 'created_at', 'updated_at'
         )
-        read_only_fields = ('id', 'created_at', 'updated_at')
+        read_only_fields = ('id', 'created_at', 'updated_at', 'is_active')
+    
+    def create(self, validated_data):
+        """Force is_active to False on creation."""
+        validated_data['is_active'] = False
+        return super().create(validated_data)
 
 
 class AdminExamDetailSerializer(serializers.ModelSerializer):

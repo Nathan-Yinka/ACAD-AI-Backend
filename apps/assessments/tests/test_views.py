@@ -250,12 +250,25 @@ class AdminExamViewSetTests(TestCase):
     def test_activate_exam(self):
         """Test admin can activate exam."""
         exam = Exam.objects.create(title='Test', course='CS101', duration_minutes=30, is_active=False)
+        Question.objects.create(exam=exam, question_text='Test Question', expected_answer='Answer', points=10)
         url = reverse('assessments:admin-exam-activate', kwargs={'pk': exam.id})
         response = self.client.post(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         exam.refresh_from_db()
         self.assertTrue(exam.is_active)
+
+    def test_cannot_activate_exam_without_questions(self):
+        """Test admin cannot activate exam without questions."""
+        exam = Exam.objects.create(title='Test', course='CS101', duration_minutes=30, is_active=False)
+        url = reverse('assessments:admin-exam-activate', kwargs={'pk': exam.id})
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(response.data['success'])
+        self.assertIn('questions', response.data['message'].lower())
+        exam.refresh_from_db()
+        self.assertFalse(exam.is_active)
 
     def test_deactivate_exam(self):
         """Test admin can deactivate exam."""

@@ -1,6 +1,7 @@
 """Service for handling question operations during exam sessions."""
 import logging
-from apps.assessments.models import Question, ExamSession, StudentAnswer
+from django.db import transaction
+from apps.assessments.models import Question, ExamSession, StudentAnswer, Exam
 from apps.assessments.services.answer_service import AnswerService
 from apps.core.exceptions import ExamNotFoundError, SubmissionValidationError
 
@@ -25,6 +26,21 @@ class QuestionService:
         except Question.DoesNotExist:
             raise ExamNotFoundError(f'Question {order} not found in this exam.')
 
+    @staticmethod
+    @transaction.atomic
+    def delete_question_and_reorder(question: Question):
+        """
+        Delete a question and reorder remaining questions for the exam.
+        """
+        exam = question.exam
+        question.delete()
+        
+        remaining_questions = Question.objects.filter(exam=exam).order_by('order')
+        for index, q in enumerate(remaining_questions, start=1):
+            if q.order != index:
+                q.order = index
+                q.save(update_fields=['order'])
+    
     @staticmethod
     def submit_single_answer(session: ExamSession, question_order: int, answer_text: str) -> StudentAnswer:
         """Submit an answer for a single question during an exam session."""

@@ -17,9 +17,17 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/api/grades/admin/grades/?page=1",
-					"host": ["{{base_url}}"],
-					"path": ["api", "grades", "admin", "grades", ""],
+					"raw": "{{base_url}}/api/v1/grades/admin/grades?page=1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"grades",
+						"admin",
+						"grades"
+					],
 					"query": [
 						{
 							"key": "page",
@@ -42,9 +50,17 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/grades/admin/grades/",
-							"host": ["{{base_url}}"],
-							"path": ["api", "grades", "admin", "grades", ""]
+							"raw": "{{base_url}}/api/v1/grades/admin/grades",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"grades",
+								"admin",
+								"grades"
+							]
 						}
 					},
 					"status": "OK",
@@ -72,9 +88,19 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/api/grades/admin/exams/1/grades/?page=1",
-					"host": ["{{base_url}}"],
-					"path": ["api", "grades", "admin", "exams", "1", "grades", ""],
+					"raw": "{{base_url}}/api/v1/grades/admin/exams/1/grades?page=1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"grades",
+						"admin",
+						"exams",
+						"1",
+						"grades"
+					],
 					"query": [
 						{
 							"key": "page",
@@ -99,9 +125,18 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/api/grades/admin/grades/25/",
-					"host": ["{{base_url}}"],
-					"path": ["api", "grades", "admin", "grades", "25", ""]
+					"raw": "{{base_url}}/api/v1/grades/admin/grades/25",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"grades",
+						"admin",
+						"grades",
+						"25"
+					]
 				},
 				"description": "View detailed grade including full question payloads, student answers, expected answers, and grading feedback. Admin gets complete breakdown."
 			},
@@ -117,9 +152,18 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/grades/admin/grades/25/",
-							"host": ["{{base_url}}"],
-							"path": ["api", "grades", "admin", "grades", "25", ""]
+							"raw": "{{base_url}}/api/v1/grades/admin/grades/25",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"grades",
+								"admin",
+								"grades",
+								"25"
+							]
 						}
 					},
 					"status": "OK",
@@ -150,4 +194,3 @@
 		}
 	]
 }
-

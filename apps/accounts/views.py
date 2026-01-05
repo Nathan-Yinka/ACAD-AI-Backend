@@ -201,3 +201,52 @@ class UserMeView(generics.RetrieveAPIView):
             message='User information retrieved successfully'
         )
 
+
+@extend_schema_view(
+    post=extend_schema(
+        summary='Logout user',
+        description='Logout the authenticated user and blacklist their authentication token.',
+        responses={
+            200: {'description': 'Logout successful'},
+            401: {'description': 'Authentication required'}
+        },
+        tags=['Auth']
+    )
+)
+class UserLogoutView(generics.GenericAPIView):
+    """
+    User logout endpoint.
+    Blacklists the authentication token so it can no longer be used.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        logger.info(f'Logout attempt for user: {request.user.email}')
+        
+        auth_header = request.META.get('HTTP_AUTHORIZATION', '')
+        if auth_header.startswith('Bearer '):
+            token_key = auth_header.split(' ')[1]
+            
+            try:
+                token = Token.objects.get(key=token_key)
+                from .models import BlacklistedToken
+                BlacklistedToken.objects.get_or_create(
+                    token=token_key,
+                    defaults={'user': request.user}
+                )
+                token.delete()
+                
+                logger.info(f'User {request.user.email} logged out successfully. Token blacklisted.')
+                return StandardResponse.success(message='Logout successful')
+            except Token.DoesNotExist:
+                logger.warning(f'Token not found for user: {request.user.email}')
+                return StandardResponse.error(
+                    message='Invalid token',
+                    status_code=status.HTTP_400_BAD_REQUEST
+                )
+        else:
+            return StandardResponse.error(
+                message='Authorization header missing or invalid',
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+

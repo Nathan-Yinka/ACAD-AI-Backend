@@ -5,8 +5,10 @@ import logging
 from rest_framework import viewsets, permissions
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
 from apps.core.mixins import StandardResponseMixin
+from apps.core.response import StandardResponse
 from apps.assessments.models import Question, Exam
 from apps.assessments.serializers.admin_serializers import AdminQuestionSerializer
+from apps.assessments.services.question_service import QuestionService
 from apps.core.permissions import IsAdmin
 from apps.core.exceptions import ExamNotFoundError, ExamModificationError
 
@@ -52,6 +54,7 @@ class AdminQuestionViewSet(StandardResponseMixin, viewsets.ModelViewSet):
             raise ExamNotFoundError('Exam not found')
         if exam.has_active_sessions() or exam.has_submissions():
             raise ExamModificationError('Cannot add questions to an exam that has active sessions or submissions.')
+        serializer.context['exam'] = exam
         serializer.save(exam=exam)
     
     @extend_schema(
@@ -86,7 +89,7 @@ class AdminQuestionViewSet(StandardResponseMixin, viewsets.ModelViewSet):
     
     @extend_schema(
         summary='Delete question',
-        description='Delete a question from an exam (admin only).',
+        description='Delete a question from an exam and reorder remaining questions (admin only).',
         parameters=[
             OpenApiParameter('exam_pk', int, location=OpenApiParameter.PATH, description='Exam ID', required=True),
             OpenApiParameter('id', int, location=OpenApiParameter.PATH, description='Question ID', required=True),
@@ -95,7 +98,12 @@ class AdminQuestionViewSet(StandardResponseMixin, viewsets.ModelViewSet):
     )
     def destroy(self, request, *args, **kwargs):
         question = self.get_object()
-        if question.exam.has_active_sessions() or question.exam.has_submissions():
+        exam = question.exam
+        
+        if exam.has_active_sessions() or exam.has_submissions():
             raise ExamModificationError('Cannot delete questions from an exam that has active sessions or submissions.')
-        return super().destroy(request, *args, **kwargs)
+        
+        QuestionService.delete_question_and_reorder(question)
+        
+        return StandardResponse.success(message='Question deleted successfully and remaining questions reordered')
 

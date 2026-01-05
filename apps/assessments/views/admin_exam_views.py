@@ -89,6 +89,11 @@ class AdminExamViewSet(StandardResponseMixin, viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], url_path='activate')
     def activate(self, request, pk=None):
         exam = self.get_object()
+        if exam.get_questions_count() == 0:
+            return StandardResponse.error(
+                message='Cannot activate an exam without questions. Please add questions to the exam first.',
+                status_code=400
+            )
         exam.is_active = True
         exam.save(update_fields=['is_active'])
         return StandardResponse.success(

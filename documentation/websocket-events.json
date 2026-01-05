@@ -9,11 +9,17 @@
 			"name": "WebSocket Connection",
 			"request": {
 				"url": {
-					"raw": "ws://localhost:8000/ws/exam/{{session_token}}/?token={{token}}",
+					"raw": "ws://localhost:8000/ws/exam/{{session_token}}?token={{token}}",
 					"protocol": "ws",
-					"host": ["localhost"],
+					"host": [
+						"localhost"
+					],
 					"port": "8000",
-					"path": ["ws", "exam", "{{session_token}}", ""],
+					"path": [
+						"ws",
+						"exam",
+						"{{session_token}}"
+					],
 					"query": [
 						{
 							"key": "token",
@@ -21,7 +27,7 @@
 						}
 					]
 				},
-				"description": "Connect to WebSocket using the session token from the start exam endpoint.\n\n**Connection URL:** `ws://localhost:8000/ws/exam/{session_token}/?token={auth_token}`\n\n**Parameters:**\n- `{session_token}` - Exam session token from `/api/exams/{id}/start/` endpoint\n- `{auth_token}` - Authentication token (Bearer token) from login/register endpoint\n\n**Authentication:** Token-based authentication via query parameter. Use the same authentication token that you use for HTTP API requests.\n\n**Events to Listen For:**\n- `connected` - Connection established\n- `pong` - Response to ping\n- `session_completed` - Session completed (submitted or timeout)\n- `session_expired` - Token expired/invalidated"
+				"description": "Connect to WebSocket using the session token from the start exam endpoint.\n\n**Connection URL:** `ws://localhost:8000/ws/exam/{session_token}/?token={auth_token}`\n\n**Parameters:**\n- `{session_token}` - Exam session token from `/api/v1/exams/{id}/start/` endpoint\n- `{auth_token}` - Authentication token (Bearer token) from login/register endpoint\n\n**Authentication:** Token-based authentication via query parameter. Use the same authentication token that you use for HTTP API requests.\n\n**Events to Listen For:**\n- `connected` - Connection established\n- `pong` - Response to ping\n- `session_completed` - Session completed (submitted or timeout)\n- `session_expired` - Token expired/invalidated"
 			},
 			"response": []
 		},
@@ -29,11 +35,17 @@
 			"name": "Send Ping Message",
 			"request": {
 				"url": {
-					"raw": "ws://localhost:8000/ws/exam/{{session_token}}/?token={{token}}",
+					"raw": "ws://localhost:8000/ws/exam/{{session_token}}?token={{token}}",
 					"protocol": "ws",
-					"host": ["localhost"],
+					"host": [
+						"localhost"
+					],
 					"port": "8000",
-					"path": ["ws", "exam", "{{session_token}}", ""],
+					"path": [
+						"ws",
+						"exam",
+						"{{session_token}}"
+					],
 					"query": [
 						{
 							"key": "token",
@@ -54,7 +66,7 @@
 				"exec": [
 					"// Note: Postman WebSocket requires manual connection",
 					"// Use the WebSocket URL: ws://localhost:8000/ws/exam/{session_token}/?token={auth_token}",
-					"// Replace {session_token} with your session token from /api/exams/{id}/start/",
+					"// Replace {session_token} with your session token from /api/v1/exams/{id}/start/",
 					"// Replace {auth_token} with your authentication token from login/register"
 				]
 			}
@@ -70,4 +82,3 @@
 	],
 	"protocolProfileBehavior": {}
 }
-

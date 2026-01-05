@@ -30,3 +30,30 @@ class User(AbstractUser):
     def __str__(self):
         return self.email
 
+
+class BlacklistedToken(models.Model):
+    """
+    Model to store blacklisted authentication tokens.
+    """
+    token = models.CharField(max_length=40, unique=True, db_index=True)
+    blacklisted_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='blacklisted_tokens',
+        null=True,
+        blank=True
+    )
+
+    class Meta:
+        db_table = 'blacklisted_tokens'
+        verbose_name = 'Blacklisted Token'
+        verbose_name_plural = 'Blacklisted Tokens'
+        ordering = ['-blacklisted_at']
+        indexes = [
+            models.Index(fields=['token']),
+            models.Index(fields=['blacklisted_at']),
+        ]
+
+    def __str__(self):
+        return f'Blacklisted token: {self.token[:10]}...'

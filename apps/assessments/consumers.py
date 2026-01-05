@@ -104,8 +104,9 @@ class ExamSessionConsumer(AsyncWebsocketConsumer):
             'type': 'session_completed',
             'message': event['message'],
             'reason': event.get('reason', 'submitted'),
-            'grade_history_id': event.get('grade_history_id'),
+            # 'grade_history_id': event.get('grade_history_id'),
         }))
+        await self.close(code=1000)
 
     async def session_expired(self, event):
         """Handle session expired event (token invalidated by new session)."""

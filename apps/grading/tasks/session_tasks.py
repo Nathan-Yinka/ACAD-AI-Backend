@@ -44,32 +44,29 @@ def schedule_session_expiry(session_id: int):
 
 
 def grade_expired_session_now(session, tokens: list):
-    """Grade an expired session immediately and notify via WebSocket."""
-    from apps.grading.services import GradingService
+    """Grade an expired session in background and notify via WebSocket immediately."""
+    # Send WebSocket event immediately without waiting for grading
+    channel_layer = get_channel_layer()
+    if channel_layer:
+        for token in tokens:
+            try:
+                async_to_sync(channel_layer.group_send)(
+                    f'exam_session_{token}',
+                    {
+                        'type': 'session_completed',
+                        'message': 'Exam time has ended. Your answers have been submitted. Grading in progress.',
+                        'reason': 'timeout',
+                    }
+                )
+            except Exception:
+                pass
     
+    # Grade in background (async)
     try:
+        from apps.grading.services import GradingService
         grade_history = GradingService.grade_session(session, grading_method='timeout')
-        
-        # Notify all token WebSocket connections
-        channel_layer = get_channel_layer()
-        if channel_layer:
-            for token in tokens:
-                try:
-                    async_to_sync(channel_layer.group_send)(
-                        f'exam_session_{token}',
-                        {
-                            'type': 'session_completed',
-                            'message': 'Exam time has ended. Your answers have been submitted.',
-                            'reason': 'timeout',
-                            'grade_history_id': grade_history.id,
-                        }
-                    )
-                except Exception:
-                    pass
-        
         logger.info(f'Graded expired session {session.id}, score: {grade_history.total_score}/{grade_history.max_score}')
         return grade_history.id
-        
     except Exception as e:
         logger.error(f'Failed to grade expired session {session.id}: {e}', exc_info=True)
         raise
@@ -123,3 +120,45 @@ def grade_expired_session(session_id: int, tokens: list = None):
         tokens = list(session.tokens.filter(is_valid=True).values_list('token', flat=True))
     
     return grade_expired_session_now(session, tokens)
+
+
+def grade_submitted_session_now(session, token: str):
+    """Grade a submitted session in background and notify via WebSocket immediately."""
+    # Send WebSocket event immediately without waiting for grading
+    channel_layer = get_channel_layer()
+    if channel_layer:
+        try:
+            async_to_sync(channel_layer.group_send)(
+                f'exam_session_{token}',
+                {
+                    'type': 'session_completed',
+                    'message': 'Exam submitted successfully. Grading in progress.',
+                    'reason': 'submitted',
+                }
+            )
+        except Exception:
+            pass
+    
+    # Grade in background (async)
+    try:
+        from apps.grading.services import GradingService
+        grade_history = GradingService.grade_session(session, grading_method='manual')
+        logger.info(f'Graded submitted session {session.id}, score: {grade_history.total_score}/{grade_history.max_score}')
+        return grade_history.id
+    except Exception as e:
+        logger.error(f'Failed to grade submitted session {session.id}: {e}', exc_info=True)
+        raise
+
+
+@shared_task(name='grading.grade_submitted_session')
+def grade_submitted_session(session_id: int, token: str):
+    """Grade a submitted session by ID (for background processing)."""
+    from apps.assessments.models import ExamSession
+    
+    try:
+        session = ExamSession.objects.select_related('exam', 'student').get(id=session_id)
+    except ExamSession.DoesNotExist:
+        logger.warning(f'Session {session_id} not found for grading')
+        return
+    
+    return grade_submitted_session_now(session, token)

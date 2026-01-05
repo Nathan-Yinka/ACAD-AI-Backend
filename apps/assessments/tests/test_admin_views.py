@@ -102,6 +102,18 @@ class AdminExamViewSetTests(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    def test_cannot_activate_exam_without_questions(self):
+        """Test admin cannot activate exam without questions."""
+        exam = Exam.objects.create(title='Test Exam', course='CS101', duration_minutes=30, is_active=False)
+        url = reverse('assessments:admin-exam-activate', kwargs={'pk': exam.id})
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(response.data['success'])
+        self.assertIn('questions', response.data['message'].lower())
+        exam.refresh_from_db()
+        self.assertFalse(exam.is_active)
+
 
 class AdminQuestionViewSetTests(TestCase):
     """Tests for AdminQuestionViewSet."""
@@ -196,6 +208,33 @@ class AdminQuestionViewSetTests(TestCase):
                 expected_answer='answer',
                 points=5
             )
+
+    def test_cannot_delete_question_with_active_session(self):
+        """Test admin cannot delete question when exam has active session."""
+        from django.utils import timezone
+        from datetime import timedelta
+        from apps.core.exceptions import ExamModificationError
+        
+        question = Question.objects.create(
+            exam=self.exam, order=1, question_text='Test Question',
+            expected_answer='Answer', points=10
+        )
+        
+        student = create_test_user(email='student@example.com')
+        ExamSession.objects.create(
+            student=student,
+            exam=self.exam,
+            expires_at=timezone.now() + timedelta(hours=1),
+            is_completed=False
+        )
+        
+        url = reverse('assessments:admin-question-detail', kwargs={'exam_pk': self.exam.id, 'pk': question.id})
+        response = self.client.delete(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(response.data['success'])
+        self.assertIn('active sessions', response.data['message'].lower())
+        self.assertTrue(Question.objects.filter(id=question.id).exists())
 
 
 class AdminSessionViewTests(TestCase):
