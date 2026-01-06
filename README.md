@@ -255,7 +255,7 @@ Beyond the original requirements, this implementation includes:
 - **Question Management** - Support for multiple question types with options and scoring
 - **Session-Based Exam Taking** - Secure token-based exam sessions with time limits
 - **Answer Submission** - Save answers during exam session with progress tracking
-- **Automated Grading** - Multiple grading methods (Mock, OpenAI, Anthropic)
+- **Automated Grading** - Multiple grading methods (Mock, OpenAI)
 - **Grade History** - Complete tracking of grading results and history
 - **Real-time Updates** - WebSocket support for live session updates
 
@@ -263,7 +263,7 @@ Beyond the original requirements, this implementation includes:
 
 - **WebSocket Integration** - Real-time communication for exam sessions
 - **Session Management** - Token-based session tracking with expiration
-- **Grading System** - Modular grader architecture (Mock, OpenAI, Anthropic)
+- **Grading System** - Modular grader architecture (Mock, OpenAI)
 - **Background Processing** - Celery integration for asynchronous operations
 - **Admin Features** - Full CRUD operations for exams, questions, sessions, and grades
 - **API Features** - Standardized response format, comprehensive error handling, pagination
@@ -286,8 +286,7 @@ Beyond the original requirements, this implementation includes:
 
 ### Grading Services
 - **scikit-learn 1.3.2** - Machine learning utilities (mock grading)
-- **OpenAI 1.3.5** - GPT integration
-- **Anthropic 0.7.8** - Claude integration
+- **OpenAI 1.3.5** - GPT integration (GPT-4o model)
 
 ### API Documentation
 - **drf-spectacular 0.26.5** - OpenAPI 3.0 schema generation
@@ -457,7 +456,7 @@ ws://localhost:8000/ws/exam/{session_token}/?token={auth_token}
 - `student`, `exam`, `session_id`
 - `status` (PENDING, IN_PROGRESS, COMPLETED, FAILED)
 - `total_score`, `max_score`, `percentage`
-- `grading_method` (mock, openai, anthropic)
+- `grading_method` (mock, openai)
 - `started_at`, `submitted_at`, `graded_at`
 - Complete grading record
 
@@ -491,9 +490,8 @@ CELERY_BROKER_URL=redis://localhost:6379/0
 CELERY_RESULT_BACKEND=redis://localhost:6379/0
 
 # Grading
-GRADING_SERVICE=mock  # or 'openai' or 'anthropic'
+GRADING_SERVICE=mock  # or 'openai'
 OPENAI_API_KEY=your-key  # if using OpenAI
-ANTHROPIC_API_KEY=your-key  # if using Anthropic
 
 # Admin (for Docker)
 ADMIN_EMAIL=admin@example.com

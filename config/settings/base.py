@@ -157,7 +157,6 @@ SPECTACULAR_SETTINGS = {
 
 GRADING_SERVICE = os.getenv('GRADING_SERVICE', 'mock')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
-ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY', '')
 
 # Celery Configuration
 # Default to Redis, but can use database broker by setting CELERY_BROKER_URL
