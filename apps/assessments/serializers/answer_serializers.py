@@ -4,9 +4,22 @@ from .question_serializers import QuestionDetailSerializer
 
 
 class AnswerCreateSerializer(serializers.ModelSerializer):
-    question_id = serializers.IntegerField(write_only=True)
+    question_id = serializers.IntegerField(
+        write_only=True,
+        required=True,
+        error_messages={
+            'required': 'Question ID is required.',
+            'invalid': 'Question ID must be a valid integer.',
+        }
+    )
     answer_text = serializers.CharField(
-        help_text='Answer text. For multiple choice with allow_multiple=True, use JSON array like ["A", "B"]'
+        required=True,
+        allow_blank=False,
+        help_text='Answer text. For multiple choice with allow_multiple=True, use JSON array like ["A", "B"]',
+        error_messages={
+            'required': 'Answer text is required.',
+            'blank': 'Answer text cannot be blank.',
+        }
     )
 
     class Meta:

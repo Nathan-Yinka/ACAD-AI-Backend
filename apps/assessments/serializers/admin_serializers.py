@@ -7,6 +7,53 @@ from ..models import Exam, Question
 
 class AdminQuestionSerializer(serializers.ModelSerializer):
     """Admin serializer for Question model (includes expected_answer, options, and allow_multiple)."""
+    question_text = serializers.CharField(
+        required=True,
+        allow_blank=False,
+        error_messages={
+            'required': 'Question text is required.',
+            'blank': 'Question text cannot be blank.',
+        }
+    )
+    question_type = serializers.ChoiceField(
+        choices=Question.QUESTION_TYPE_CHOICES,
+        required=True,
+        error_messages={
+            'required': 'Question type is required.',
+            'invalid_choice': 'Invalid question type. Must be one of: SHORT_ANSWER, ESSAY, MULTIPLE_CHOICE.',
+        }
+    )
+    expected_answer = serializers.CharField(
+        required=True,
+        allow_blank=False,
+        error_messages={
+            'required': 'Expected answer is required.',
+            'blank': 'Expected answer cannot be blank.',
+        }
+    )
+    points = serializers.IntegerField(
+        required=True,
+        min_value=1,
+        error_messages={
+            'required': 'Points is required.',
+            'invalid': 'Points must be a valid integer.',
+            'min_value': 'Points must be at least 1.',
+        }
+    )
+    allow_multiple = serializers.BooleanField(
+        required=False,
+        error_messages={
+            'invalid': 'allow_multiple must be a valid boolean.',
+        }
+    )
+    options = serializers.JSONField(
+        required=False,
+        allow_null=True,
+        error_messages={
+            'invalid': 'Options must be valid JSON.',
+        }
+    )
+    
     class Meta:
         model = Question
         fields = (
@@ -88,6 +135,43 @@ class AdminQuestionSerializer(serializers.ModelSerializer):
 
 class AdminExamSerializer(serializers.ModelSerializer):
     """Admin serializer for creating/updating Exam model."""
+    title = serializers.CharField(
+        max_length=200,
+        required=True,
+        allow_blank=False,
+        error_messages={
+            'required': 'Title is required.',
+            'blank': 'Title cannot be blank.',
+            'max_length': 'Title cannot exceed 200 characters.',
+        }
+    )
+    course = serializers.CharField(
+        max_length=100,
+        required=True,
+        allow_blank=False,
+        error_messages={
+            'required': 'Course is required.',
+            'blank': 'Course cannot be blank.',
+            'max_length': 'Course cannot exceed 100 characters.',
+        }
+    )
+    duration_minutes = serializers.IntegerField(
+        required=True,
+        min_value=1,
+        error_messages={
+            'required': 'Duration is required.',
+            'invalid': 'Duration must be a valid integer.',
+            'min_value': 'Duration must be at least 1 minute.',
+        }
+    )
+    description = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        error_messages={
+            'invalid': 'Description must be a valid string.',
+        }
+    )
+    
     class Meta:
         model = Exam
         fields = (

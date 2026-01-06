@@ -10,6 +10,7 @@ from apps.assessments.serializers import (
     AnswerSubmitResponseSerializer,
     ProgressResponseSerializer,
 )
+from apps.assessments.serializers.answer_input_serializer import AnswerTextInputSerializer
 from apps.assessments.services.question_service import QuestionService
 from apps.assessments.services.exam_session_service import ExamSessionService
 from apps.core.permissions import IsStudent
@@ -66,7 +67,7 @@ class SessionAnswerView(generics.GenericAPIView):
             OpenApiParameter('token', str, location=OpenApiParameter.PATH, description='Session Token'),
             OpenApiParameter('order', int, location=OpenApiParameter.PATH, description='Question order'),
         ],
-        request={'application/json': {'type': 'object', 'properties': {'answer_text': {'type': 'string'}}}},
+        request=AnswerTextInputSerializer,
         responses={200: AnswerSubmitResponseSerializer},
         tags=['Exam Session']
     )
@@ -76,7 +77,10 @@ class SessionAnswerView(generics.GenericAPIView):
         except ValueError as e:
             return StandardResponse.error(message=str(e), status_code=status.HTTP_400_BAD_REQUEST)
 
-        answer_text = request.data.get('answer_text', '')
+        # Validate input using serializer
+        input_serializer = AnswerTextInputSerializer(data=request.data)
+        input_serializer.is_valid(raise_exception=True)
+        answer_text = input_serializer.validated_data['answer_text']
 
         try:
             student_answer = QuestionService.submit_single_answer(session, order, answer_text)

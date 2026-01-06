@@ -4,6 +4,8 @@ A comprehensive Django-based REST API system for managing academic assessments, 
 
 **Repository:** [https://github.com/Nathan-Yinka/ACAD-AI-Backend.git](https://github.com/Nathan-Yinka/ACAD-AI-Backend.git)
 
+**📖 Live API Documentation (Postman):** [https://documenter.getpostman.com/view/28578777/2sBXVcnZ3E](https://documenter.getpostman.com/view/28578777/2sBXVcnZ3E)
+
 ## 📋 Table of Contents
 
 - [Quick Start - Running the Application](#-quick-start---running-the-application)
@@ -338,6 +340,10 @@ The system uses a normalized relational database schema with the following key e
 See [Database Schema](#database-schema) for detailed information.
 
 ## 📚 API Documentation
+
+### Live Documentation
+
+- **📖 Postman Collection (Live)**: [https://documenter.getpostman.com/view/28578777/2sBXVcnZ3E](https://documenter.getpostman.com/view/28578777/2sBXVcnZ3E) - Complete API documentation with runnable examples
 
 ### Interactive Documentation
 

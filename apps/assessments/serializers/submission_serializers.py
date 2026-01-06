@@ -8,7 +8,16 @@ from apps.assessments.services.answer_service import AnswerService
 
 
 class SubmissionCreateSerializer(serializers.Serializer):
-    answers = AnswerCreateSerializer(many=True)
+    answers = AnswerCreateSerializer(
+        many=True,
+        required=True,
+        error_messages={
+            'required': 'Answers are required.',
+            'null': 'Answers cannot be null.',
+            'not_a_list': 'Answers must be a list.',
+            'empty': 'At least one answer is required.',
+        }
+    )
 
     def validate_answers(self, value):
         """Validate all answers using AnswerService normalization."""

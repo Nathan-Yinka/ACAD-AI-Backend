@@ -86,3 +86,60 @@ class UserService:
         """
         return UserSerializer(user).data
 
+    @staticmethod
+    def validate_profile_update(user: User, username: str = None, email: str = None) -> Tuple[bool, str]:
+        """
+        Validate that username and email are not already taken by another user.
+        
+        Args:
+            user: Current user instance
+            username: New username to validate (optional)
+            email: New email to validate (optional)
+            
+        Returns:
+            Tuple of (is_valid: bool, error_message: str)
+        """
+        if username is not None:
+            if User.objects.filter(username=username).exclude(id=user.id).exists():
+                return False, 'Username is already taken.'
+        
+        if email is not None:
+            if User.objects.filter(email=email).exclude(id=user.id).exists():
+                return False, 'Email is already taken.'
+        
+        return True, ''
+
+    @staticmethod
+    def update_user_profile(user: User, username: str = None, email: str = None) -> User:
+        """
+        Update user profile with validation.
+        
+        Args:
+            user: User instance to update
+            username: New username (optional)
+            email: New email (optional)
+            
+        Returns:
+            Updated user instance
+            
+        Raises:
+            ValueError: If username or email is already taken
+        """
+        is_valid, error_message = UserService.validate_profile_update(user, username, email)
+        if not is_valid:
+            raise ValueError(error_message)
+        
+        update_fields = []
+        if username is not None:
+            user.username = username
+            update_fields.append('username')
+        if email is not None:
+            user.email = email
+            update_fields.append('email')
+        
+        if update_fields:
+            user.save(update_fields=update_fields)
+            logger.info(f'User {user.email} profile updated successfully')
+        
+        return user
+

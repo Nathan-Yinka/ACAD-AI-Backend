@@ -33,6 +33,10 @@ class AuthenticationTests(TestCase):
         self.assertTrue(response.data['success'])
         self.assertIn('token', response.data['data'])
         self.assertTrue(User.objects.filter(email=self.user_data['email']).exists())
+        
+        # Verify that is_student defaults to True
+        user = User.objects.get(email=self.user_data['email'])
+        self.assertTrue(user.is_student)
 
     def test_register_user_duplicate_email(self):
         """Test registration fails with duplicate email."""
@@ -58,6 +62,25 @@ class AuthenticationTests(TestCase):
         response = self.client.post(self.register_url, self.user_data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_register_user_is_student_defaults_to_true(self):
+        """Test that is_student defaults to True and cannot be passed."""
+        # Register without is_student
+        response = self.client.post(self.register_url, self.user_data)
+        
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        user = User.objects.get(email=self.user_data['email'])
+        self.assertTrue(user.is_student, "is_student should default to True")
+        
+        # Try to register with is_student=False (should be ignored, still creates as student)
+        self.user_data['email'] = 'test2@example.com'
+        self.user_data['username'] = 'testuser2'
+        self.user_data['is_student'] = False
+        
+        response2 = self.client.post(self.register_url, self.user_data)
+        self.assertEqual(response2.status_code, status.HTTP_201_CREATED)
+        user2 = User.objects.get(email=self.user_data['email'])
+        self.assertTrue(user2.is_student, "is_student should still be True even if passed as False")
 
     def test_login_success(self):
         """Test login is successful."""

@@ -35,8 +35,7 @@ logger = logging.getLogger(__name__)
                     'username': 'nathan-yinka',
                     'email': 'oludarenathaniel@gmail.com',
                     'password': '12345',
-                    'password_confirm': '12345',
-                    'is_student': True
+                    'password_confirm': '12345'
                 },
                 request_only=True,
             ),
@@ -142,13 +141,27 @@ class UserProfileView(StandardResponseRetrieveMixin, generics.RetrieveUpdateAPIV
         tags=['User Profile']
     )
     def put(self, request, *args, **kwargs):
-        response = super().put(request, *args, **kwargs)
-        if response.status_code == status.HTTP_200_OK:
+        serializer = self.get_serializer(request.user, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        username = serializer.validated_data.get('username')
+        email = serializer.validated_data.get('email')
+        
+        try:
+            updated_user = UserService.update_user_profile(
+                request.user,
+                username=username,
+                email=email
+            )
             return StandardResponse.success(
-                data=response.data,
+                data=UserService.get_user_data(updated_user),
                 message='Profile updated successfully'
             )
-        return response
+        except ValueError as e:
+            return StandardResponse.error(
+                message=str(e),
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
 
     @extend_schema(
         summary='Partially update user profile',
@@ -162,13 +175,27 @@ class UserProfileView(StandardResponseRetrieveMixin, generics.RetrieveUpdateAPIV
         tags=['User Profile']
     )
     def patch(self, request, *args, **kwargs):
-        response = super().patch(request, *args, **kwargs)
-        if response.status_code == status.HTTP_200_OK:
+        serializer = self.get_serializer(request.user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        
+        username = serializer.validated_data.get('username')
+        email = serializer.validated_data.get('email')
+        
+        try:
+            updated_user = UserService.update_user_profile(
+                request.user,
+                username=username,
+                email=email
+            )
             return StandardResponse.success(
-                data=response.data,
+                data=UserService.get_user_data(updated_user),
                 message='Profile updated successfully'
             )
-        return response
+        except ValueError as e:
+            return StandardResponse.error(
+                message=str(e),
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
 
     def get_object(self):
         return self.request.user
