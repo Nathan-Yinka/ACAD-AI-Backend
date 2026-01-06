@@ -72,6 +72,68 @@ class ExamSessionService:
         return None
 
     @staticmethod
+    def get_batch_session_and_grade_info(student, exam_ids: list) -> dict:
+        """
+        Batch fetch session info and grade info for multiple exams.
+        Returns dict with exam_id as key and dict with 'session_info' and 'grade_info' as values.
+        
+        Args:
+            student: User instance
+            exam_ids: List of exam IDs
+            
+        Returns:
+            dict: {exam_id: {'session_info': {...}, 'grade_info': {...}}, ...}
+        """
+        if not exam_ids:
+            return {}
+        
+        result = {exam_id: {'session_info': None, 'grade_info': None} for exam_id in exam_ids}
+        
+        sessions = ExamSession.objects.filter(
+            student=student,
+            exam_id__in=exam_ids
+        ).select_related('exam')
+        
+        for session in sessions:
+            if session.is_active():
+                exam_id = session.exam_id
+                result[exam_id]['session_info'] = {
+                    'session_id': session.id,
+                    'time_remaining_seconds': session.time_remaining_seconds(),
+                    'started_at': session.started_at.isoformat(),
+                    'expires_at': session.expires_at.isoformat(),
+                    'answered_count': session.get_answered_count(),
+                    'total_questions': session.get_total_questions(),
+                }
+        
+        from apps.grading.models import GradeHistory
+        from django.db.models import Max
+        
+        latest_grade_ids = GradeHistory.objects.filter(
+            student=student,
+            exam_id__in=exam_ids,
+            status='COMPLETED'
+        ).values('exam_id').annotate(
+            latest_id=Max('id')
+        ).values_list('latest_id', flat=True)
+        
+        grades = GradeHistory.objects.filter(id__in=latest_grade_ids).select_related('exam')
+        
+        for grade in grades:
+            exam_id = grade.exam_id
+            result[exam_id]['grade_info'] = {
+                'grade_id': grade.id,
+                'status': grade.status,
+                'total_score': float(grade.total_score),
+                'max_score': float(grade.max_score),
+                'percentage': float(grade.percentage),
+                'graded_at': grade.graded_at.isoformat() if grade.graded_at else None,
+                'submitted_at': grade.submitted_at.isoformat() if grade.submitted_at else None,
+            }
+        
+        return result
+
+    @staticmethod
     def start_or_continue_session(student, exam_id: int) -> Tuple[ExamSession, SessionToken, str]:
         """Start new session or continue existing one. Returns (session, token, action)."""
         try:
@@ -105,7 +167,6 @@ class ExamSessionService:
         """Schedule a Celery task to run at exact session expiry time."""
         try:
             from django.conf import settings
-            # Skip scheduling in test mode or when Celery is not configured
             if getattr(settings, 'TESTING', False):
                 logger.info(f'Skipping task scheduling in test mode for session {session.id}')
                 return
@@ -170,3 +231,15 @@ class ExamSessionService:
         """Mark an exam session as completed."""
         session.mark_completed(submission_type)
         logger.info(f'Exam session {session.id} marked as completed ({submission_type})')
+    
+    @staticmethod
+    def submit_session(session: ExamSession, token: str):
+        """
+        Submit an exam session for grading.
+        Marks session as completed and queues background grading task.
+        """
+        from apps.grading.tasks import grade_submitted_session
+        
+        ExamSessionService.mark_session_completed(session, submission_type='MANUAL')
+        grade_submitted_session.delay(session.id, token)
+        logger.info(f'Session {session.id} submitted for grading')

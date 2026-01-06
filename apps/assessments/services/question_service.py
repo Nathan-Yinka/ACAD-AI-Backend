@@ -3,7 +3,7 @@ import logging
 from django.db import transaction
 from apps.assessments.models import Question, ExamSession, StudentAnswer, Exam
 from apps.assessments.services.answer_service import AnswerService
-from apps.core.exceptions import ExamNotFoundError, SubmissionValidationError
+from apps.core.exceptions import ExamNotFoundError, SubmissionValidationError, ExamModificationError
 
 logger = logging.getLogger(__name__)
 
@@ -42,8 +42,16 @@ class QuestionService:
                 q.save(update_fields=['order'])
     
     @staticmethod
+    def validate_answer_text(answer_text: str):
+        """Validate that answer text is provided."""
+        if not answer_text:
+            raise SubmissionValidationError('Answer text is required.')
+    
+    @staticmethod
     def submit_single_answer(session: ExamSession, question_order: int, answer_text: str) -> StudentAnswer:
         """Submit an answer for a single question during an exam session."""
+        QuestionService.validate_answer_text(answer_text)
+        
         if session.is_completed:
             raise SubmissionValidationError('This exam session has already been completed.')
         
@@ -96,4 +104,37 @@ class QuestionService:
             return answer.answer_text
         except StudentAnswer.DoesNotExist:
             return None
+    
+    @staticmethod
+    def get_questions_for_exam(exam_id: int = None):
+        """Get all questions for an exam ordered by order field. If exam_id is None, returns all questions."""
+        if exam_id:
+            return Question.objects.filter(exam_id=exam_id).order_by('order')
+        return Question.objects.all().order_by('order')
+    
+    @staticmethod
+    def validate_exam_for_question_modification(exam: Exam):
+        """Validate that exam can have questions added/modified."""
+        if exam.has_active_sessions() or exam.has_submissions():
+            raise ExamModificationError('Cannot modify questions for an exam that has active sessions or submissions.')
+    
+    @staticmethod
+    def get_exam_for_question_creation(exam_id: int) -> Exam:
+        """
+        Get and validate exam for question creation.
+        Raises ExamNotFoundError if exam_id is missing or exam doesn't exist.
+        Raises ExamModificationError if exam cannot be modified.
+        """
+        from apps.assessments.services.exam_service import ExamService
+        from apps.core.exceptions import ExamNotFoundError
+        
+        if not exam_id:
+            raise ExamNotFoundError('Exam ID is required')
+        
+        exam = ExamService.get_exam_by_id_or_none(exam_id)
+        if not exam:
+            raise ExamNotFoundError('Exam not found')
+        
+        QuestionService.validate_exam_for_question_modification(exam)
+        return exam
 

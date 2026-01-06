@@ -119,4 +119,53 @@ class GradingService:
             return GradeHistory.objects.select_related('exam').get(id=grade_id, student=student)
         except GradeHistory.DoesNotExist:
             return None
+    
+    @staticmethod
+    def get_sessions_for_exam(exam_id: int):
+        """Get all sessions for an exam."""
+        from apps.assessments.models import ExamSession
+        return ExamSession.objects.filter(
+            exam_id=exam_id
+        ).select_related('student', 'exam').order_by('-started_at')
+    
+    @staticmethod
+    def get_grades_for_exam(exam_id: int):
+        """Get all grades for an exam."""
+        return GradeHistory.objects.filter(
+            exam_id=exam_id
+        ).select_related('student', 'exam').order_by('-created_at')
+    
+    @staticmethod
+    def get_all_grades():
+        """Get all grades across all exams."""
+        return GradeHistory.objects.select_related('student', 'exam').order_by('-created_at')
+    
+    @staticmethod
+    def get_student_grade_history(student, exam_id: int = None):
+        """Get grade history for a student, optionally filtered by exam."""
+        queryset = GradeHistory.objects.filter(student=student).select_related('exam')
+        if exam_id:
+            queryset = queryset.filter(exam_id=exam_id)
+        return queryset.order_by('-created_at')
+    
+    @staticmethod
+    def get_student_grade_detail(grade_id: int, student):
+        """Get detailed grade history entry for a student."""
+        try:
+            return GradeHistory.objects.select_related('exam').get(id=grade_id, student=student)
+        except GradeHistory.DoesNotExist:
+            return None
+    
+    @staticmethod
+    def get_session_detail_queryset():
+        """Get queryset for session detail view with optimizations."""
+        from apps.assessments.models import ExamSession
+        return ExamSession.objects.select_related(
+            'student', 'exam'
+        ).prefetch_related('student_answers__question')
+    
+    @staticmethod
+    def get_grade_detail_queryset():
+        """Get queryset for grade detail view with optimizations."""
+        return GradeHistory.objects.select_related('student', 'exam')
 

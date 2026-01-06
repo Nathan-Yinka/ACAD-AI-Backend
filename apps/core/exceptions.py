@@ -1,8 +1,9 @@
 """
 Custom exception classes and handlers for the application.
 """
+from django.http import Http404
 from rest_framework.views import exception_handler
-from rest_framework.exceptions import APIException, ValidationError, AuthenticationFailed, NotAuthenticated, PermissionDenied
+from rest_framework.exceptions import APIException, ValidationError, AuthenticationFailed, NotAuthenticated, PermissionDenied, NotFound
 from rest_framework import status
 
 
@@ -62,7 +63,34 @@ def custom_exception_handler(exc, context):
         error_message = str(exc)
         error_data = None
         
-        if isinstance(exc, (ValidationError, AuthenticationFailed, NotAuthenticated)):
+        # Check for 404 errors first (before other checks)
+        if response.status_code == status.HTTP_404_NOT_FOUND or isinstance(exc, (NotFound, ExamNotFoundError)) or (hasattr(exc, 'status_code') and exc.status_code == status.HTTP_404_NOT_FOUND):
+            # Handle 404 errors - extract message from exception detail attribute
+            error_message = 'Resource not found.'
+            
+            # First try to get message from exception detail (this is what we set in get_object)
+            if isinstance(exc, NotFound):
+                if hasattr(exc, 'detail') and exc.detail:
+                    if isinstance(exc.detail, list) and exc.detail:
+                        error_message = str(exc.detail[0])
+                    else:
+                        error_message = str(exc.detail)
+            elif isinstance(exc, ExamNotFoundError):
+                if hasattr(exc, 'detail') and exc.detail:
+                    error_message = str(exc.detail)
+                elif hasattr(exc, 'default_detail') and exc.default_detail:
+                    error_message = str(exc.default_detail)
+            
+            # If still default, check response.data (DRF's handler sets this from the exception)
+            if error_message == 'Resource not found.' and isinstance(response.data, dict) and 'detail' in response.data:
+                detail = response.data['detail']
+                if isinstance(detail, list) and detail:
+                    error_message = str(detail[0])
+                elif detail and detail != 'Not found.':
+                    error_message = str(detail)
+            
+            error_data = None
+        elif isinstance(exc, (ValidationError, AuthenticationFailed, NotAuthenticated)):
             errors = response.data if isinstance(response.data, dict) else {'error': response.data}
             if isinstance(errors, dict) and 'non_field_errors' in errors:
                 errors['error'] = errors.pop('non_field_errors')

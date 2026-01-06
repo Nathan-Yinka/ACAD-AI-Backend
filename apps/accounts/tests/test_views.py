@@ -4,7 +4,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 from django.contrib.auth import get_user_model
-from rest_framework.authtoken.models import Token
+from apps.accounts.services.user_service import UserService
 
 User = get_user_model()
 
@@ -111,7 +111,7 @@ class ProfileTests(TestCase):
             first_name='Test',
             last_name='User'
         )
-        self.token = Token.objects.create(user=self.user)
+        self.token = UserService.login_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.key}')
         self.profile_url = reverse('accounts:profile')
 

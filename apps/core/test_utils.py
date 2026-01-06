@@ -30,3 +30,19 @@ def create_test_admin(email='admin@example.com', password='admin123', **kwargs):
     user.save()
     return user
 
+
+def create_test_user_with_token(email='test@example.com', password='testpass123', **kwargs):
+    """Create a test user and return user with token using UserService."""
+    from apps.accounts.services.user_service import UserService
+    user = create_test_user(email, password, **kwargs)
+    token = UserService.login_user(user)
+    return user, token
+
+
+def create_test_admin_with_token(email='admin@example.com', password='admin123', **kwargs):
+    """Create a test admin user and return user with token using UserService."""
+    from apps.accounts.services.user_service import UserService
+    user = create_test_admin(email, password, **kwargs)
+    token = UserService.login_user(user)
+    return user, token
+

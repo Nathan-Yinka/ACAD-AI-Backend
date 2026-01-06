@@ -4,8 +4,8 @@ from django.urls import reverse
 from django.core.exceptions import ValidationError
 from rest_framework.test import APIClient
 from rest_framework import status
-from rest_framework.authtoken.models import Token
 from apps.core.test_utils import create_test_user, create_test_admin
+from apps.accounts.services.user_service import UserService
 from apps.assessments.models import Exam, Question, ExamSession, StudentAnswer
 
 
@@ -15,7 +15,7 @@ class AdminExamViewSetTests(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.admin = create_test_admin(email='admin@example.com')
-        self.token = Token.objects.create(user=self.admin)
+        self.token = UserService.login_user(self.admin)
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.key}')
 
     def test_list_all_exams(self):
@@ -94,7 +94,7 @@ class AdminExamViewSetTests(TestCase):
     def test_student_access_denied(self):
         """Test students cannot access admin endpoints."""
         student = create_test_user(email='student@example.com')
-        student_token = Token.objects.create(user=student)
+        student_token = UserService.login_user(student)
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {student_token.key}')
 
         url = reverse('assessments:admin-exam-list')
@@ -121,7 +121,7 @@ class AdminQuestionViewSetTests(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.admin = create_test_admin(email='admin@example.com')
-        self.token = Token.objects.create(user=self.admin)
+        self.token = UserService.login_user(self.admin)
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.key}')
         self.exam = Exam.objects.create(title='Test Exam', course='CS101', duration_minutes=60)
 
@@ -243,7 +243,7 @@ class AdminSessionViewTests(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.admin = create_test_admin(email='admin@example.com')
-        self.token = Token.objects.create(user=self.admin)
+        self.token = UserService.login_user(self.admin)
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.key}')
         
         self.student = create_test_user(email='student@example.com')
@@ -281,7 +281,7 @@ class AdminSessionViewTests(TestCase):
 
     def test_student_cannot_access_admin_sessions(self):
         """Test students cannot access admin session endpoints."""
-        student_token = Token.objects.create(user=self.student)
+        student_token = UserService.login_user(self.student)
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {student_token.key}')
         
         url = reverse('grading:admin-exam-sessions', kwargs={'exam_id': self.exam.id})

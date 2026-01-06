@@ -3,15 +3,17 @@ Views for the accounts app.
 """
 import logging
 from rest_framework import status, generics, permissions
-from rest_framework.authtoken.models import Token
+from rest_framework.views import APIView
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiExample
 from apps.core.response import StandardResponse
+from apps.core.mixins import StandardResponseRetrieveMixin
 from .models import User
 from .serializers import (
     UserRegistrationSerializer,
     UserLoginSerializer,
     UserSerializer,
 )
+from .services.user_service import UserService
 
 logger = logging.getLogger(__name__)
 
@@ -54,13 +56,11 @@ class UserRegistrationView(generics.CreateAPIView):
         logger.info(f'Registration attempt for email: {request.data.get("email", "unknown")}')
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        token, created = Token.objects.get_or_create(user=user)
-        logger.info(f'User {user.email} registered successfully')
+        user, token = UserService.register_user(serializer)
         return StandardResponse.created(
             data={
                 'token': token.key,
-                'user': UserSerializer(user).data
+                'user': UserService.get_user_data(user)
             },
             message='User registered successfully'
         )
@@ -101,24 +101,24 @@ class UserLoginView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        token, created = Token.objects.get_or_create(user=user)
-        logger.info(f'User {user.email} logged in successfully')
+        token = UserService.login_user(user)
         return StandardResponse.success(
             data={
                 'token': token.key,
-                'user': UserSerializer(user).data
+                'user': UserService.get_user_data(user)
             },
             message='Login successful'
         )
 
 
-class UserProfileView(generics.RetrieveUpdateAPIView):
+class UserProfileView(StandardResponseRetrieveMixin, generics.RetrieveUpdateAPIView):
     """
     User profile endpoint.
     Allows authenticated users to view and update their profile.
     """
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
+    success_message = 'Profile retrieved successfully'
 
     @extend_schema(
         summary='Get user profile',
@@ -129,12 +129,6 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
         },
         tags=['User Profile']
     )
-    def get(self, request, *args, **kwargs):
-        response = super().get(request, *args, **kwargs)
-        return StandardResponse.success(
-            data=response.data,
-            message='Profile retrieved successfully'
-        )
 
     @extend_schema(
         summary='Update user profile',
@@ -202,51 +196,56 @@ class UserMeView(generics.RetrieveAPIView):
         )
 
 
-@extend_schema_view(
-    post=extend_schema(
-        summary='Logout user',
-        description='Logout the authenticated user and blacklist their authentication token.',
-        responses={
-            200: {'description': 'Logout successful'},
-            401: {'description': 'Authentication required'}
-        },
-        tags=['Auth']
-    )
-)
-class UserLogoutView(generics.GenericAPIView):
+class UserLogoutView(APIView):
     """
     User logout endpoint.
     Blacklists the authentication token so it can no longer be used.
     """
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(
+        summary='Logout user',
+        description='Logout the authenticated user and blacklist their authentication token.',
+        request=None,
+        responses={
+            200: {
+                'description': 'Logout successful',
+                'content': {
+                    'application/json': {
+                        'example': {
+                            'success': True,
+                            'message': 'Logout successful',
+                            'data': None
+                        }
+                    }
+                }
+            },
+            400: {
+                'description': 'Invalid token or logout failed',
+                'content': {
+                    'application/json': {
+                        'example': {
+                            'success': False,
+                            'message': 'Invalid token',
+                            'data': None
+                        }
+                    }
+                }
+            },
+            401: {'description': 'Authentication required'}
+        },
+        tags=['Auth']
+    )
     def post(self, request, *args, **kwargs):
         logger.info(f'Logout attempt for user: {request.user.email}')
-        
         auth_header = request.META.get('HTTP_AUTHORIZATION', '')
-        if auth_header.startswith('Bearer '):
-            token_key = auth_header.split(' ')[1]
-            
-            try:
-                token = Token.objects.get(key=token_key)
-                from .models import BlacklistedToken
-                BlacklistedToken.objects.get_or_create(
-                    token=token_key,
-                    defaults={'user': request.user}
-                )
-                token.delete()
-                
-                logger.info(f'User {request.user.email} logged out successfully. Token blacklisted.')
-                return StandardResponse.success(message='Logout successful')
-            except Token.DoesNotExist:
-                logger.warning(f'Token not found for user: {request.user.email}')
-                return StandardResponse.error(
-                    message='Invalid token',
-                    status_code=status.HTTP_400_BAD_REQUEST
-                )
+        success, message = UserService.logout_user(auth_header, request.user)
+        
+        if success:
+            return StandardResponse.success(message=message)
         else:
             return StandardResponse.error(
-                message='Authorization header missing or invalid',
+                message=message,
                 status_code=status.HTTP_400_BAD_REQUEST
             )
 

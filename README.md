@@ -55,9 +55,9 @@ A comprehensive Django-based REST API system for managing academic assessments, 
 
 4. **Access the application**
    - API: http://localhost:8000/api/v1/
-   - Swagger UI: http://localhost:8000/api/v1/docs/
-   - ReDoc: http://localhost:8000/api/v1/redoc/
-   - Admin: http://localhost:8000/admin/
+   - Swagger UI: http://localhost:8000/api/v1/docs
+   - ReDoc: http://localhost:8000/api/v1/redoc
+   - Admin: http://localhost:8000/admin
 
 **Stop services:**
 - Press `Ctrl+C` if running in foreground

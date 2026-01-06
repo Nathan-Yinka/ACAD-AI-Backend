@@ -4,6 +4,7 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from apps.core.response import StandardResponse
+from apps.core.mixins import Custom404Mixin, StandardResponseListMixin, StandardResponseRetrieveMixin
 from apps.assessments.models import Exam, ExamSession
 from apps.core.permissions import IsAdmin
 from apps.grading.models import GradeHistory
@@ -17,16 +18,16 @@ from apps.grading.serializers.admin_serializers import (
 logger = logging.getLogger(__name__)
 
 
-class AdminExamSessionsListView(generics.ListAPIView):
+class AdminExamSessionsListView(StandardResponseListMixin, generics.ListAPIView):
     """List all sessions for an exam (admin only)."""
     serializer_class = AdminSessionListSerializer
     permission_classes = [IsAdmin]
+    success_message = 'Sessions retrieved successfully'
 
     def get_queryset(self):
         exam_id = self.kwargs.get('exam_id')
-        return ExamSession.objects.filter(
-            exam_id=exam_id
-        ).select_related('student', 'exam').order_by('-started_at')
+        from apps.grading.services.grading_service import GradingService
+        return GradingService.get_sessions_for_exam(exam_id)
 
     @extend_schema(
         summary='List exam sessions',
@@ -38,25 +39,23 @@ class AdminExamSessionsListView(generics.ListAPIView):
         tags=['Admin - Sessions']
     )
     def get(self, request, *args, **kwargs):
-        # Verify exam exists
+        from apps.assessments.services.exam_service import ExamService
         exam_id = self.kwargs.get('exam_id')
-        if not Exam.objects.filter(id=exam_id).exists():
+        if not ExamService.exam_exists(exam_id):
             return StandardResponse.not_found(message='Exam not found.')
-        
-        response = super().get(request, *args, **kwargs)
-        return StandardResponse.success(
-            data=response.data,
-            message='Sessions retrieved successfully'
-        )
+        return super().get(request, *args, **kwargs)
 
 
-class AdminSessionDetailView(generics.RetrieveAPIView):
+class AdminSessionDetailView(Custom404Mixin, StandardResponseRetrieveMixin, generics.RetrieveAPIView):
     """View detailed session with all student answers (admin only)."""
     serializer_class = AdminSessionDetailSerializer
     permission_classes = [IsAdmin]
-    queryset = ExamSession.objects.select_related(
-        'student', 'exam'
-    ).prefetch_related('student_answers__question')
+    not_found_message = 'Session not found.'
+    success_message = 'Session details retrieved successfully'
+    
+    def get_queryset(self):
+        from apps.grading.services.grading_service import GradingService
+        return GradingService.get_session_detail_queryset()
 
     @extend_schema(
         summary='View session details',
@@ -68,23 +67,19 @@ class AdminSessionDetailView(generics.RetrieveAPIView):
         tags=['Admin - Sessions']
     )
     def get(self, request, *args, **kwargs):
-        response = super().get(request, *args, **kwargs)
-        return StandardResponse.success(
-            data=response.data,
-            message='Session details retrieved successfully'
-        )
+        return super().get(request, *args, **kwargs)
 
 
-class AdminExamGradesListView(generics.ListAPIView):
+class AdminExamGradesListView(StandardResponseListMixin, generics.ListAPIView):
     """List all grades for an exam (admin only)."""
     serializer_class = AdminGradeListSerializer
     permission_classes = [IsAdmin]
+    success_message = 'Grades retrieved successfully'
 
     def get_queryset(self):
         exam_id = self.kwargs.get('exam_id')
-        return GradeHistory.objects.filter(
-            exam_id=exam_id
-        ).select_related('student', 'exam').order_by('-created_at')
+        from apps.grading.services.grading_service import GradingService
+        return GradingService.get_grades_for_exam(exam_id)
 
     @extend_schema(
         summary='List exam grades',
@@ -96,22 +91,23 @@ class AdminExamGradesListView(generics.ListAPIView):
         tags=['Admin - Grades']
     )
     def get(self, request, *args, **kwargs):
+        from apps.assessments.services.exam_service import ExamService
         exam_id = self.kwargs.get('exam_id')
-        if not Exam.objects.filter(id=exam_id).exists():
+        if not ExamService.exam_exists(exam_id):
             return StandardResponse.not_found(message='Exam not found.')
-        
-        response = super().get(request, *args, **kwargs)
-        return StandardResponse.success(
-            data=response.data,
-            message='Grades retrieved successfully'
-        )
+        return super().get(request, *args, **kwargs)
 
 
-class AdminGradeDetailView(generics.RetrieveAPIView):
+class AdminGradeDetailView(Custom404Mixin, StandardResponseRetrieveMixin, generics.RetrieveAPIView):
     """View detailed grade with full question/answer breakdown (admin only)."""
     serializer_class = AdminGradeDetailSerializer
     permission_classes = [IsAdmin]
-    queryset = GradeHistory.objects.select_related('student', 'exam')
+    not_found_message = 'Grade not found.'
+    success_message = 'Grade details retrieved successfully'
+    
+    def get_queryset(self):
+        from apps.grading.services.grading_service import GradingService
+        return GradingService.get_grade_detail_queryset()
 
     @extend_schema(
         summary='View grade details',
@@ -123,18 +119,18 @@ class AdminGradeDetailView(generics.RetrieveAPIView):
         tags=['Admin - Grades']
     )
     def get(self, request, *args, **kwargs):
-        response = super().get(request, *args, **kwargs)
-        return StandardResponse.success(
-            data=response.data,
-            message='Grade details retrieved successfully'
-        )
+        return super().get(request, *args, **kwargs)
 
 
-class AdminAllGradesListView(generics.ListAPIView):
+class AdminAllGradesListView(StandardResponseListMixin, generics.ListAPIView):
     """List all grades across all exams (admin only)."""
     serializer_class = AdminGradeListSerializer
     permission_classes = [IsAdmin]
-    queryset = GradeHistory.objects.select_related('student', 'exam').order_by('-created_at')
+    success_message = 'Grades retrieved successfully'
+    
+    def get_queryset(self):
+        from apps.grading.services.grading_service import GradingService
+        return GradingService.get_all_grades()
 
     @extend_schema(
         summary='List all grades',
@@ -143,9 +139,5 @@ class AdminAllGradesListView(generics.ListAPIView):
         tags=['Admin - Grades']
     )
     def get(self, request, *args, **kwargs):
-        response = super().get(request, *args, **kwargs)
-        return StandardResponse.success(
-            data=response.data,
-            message='Grades retrieved successfully'
-        )
+        return super().get(request, *args, **kwargs)
 

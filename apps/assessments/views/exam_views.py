@@ -4,7 +4,7 @@ from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from apps.core.response import StandardResponse
-from apps.core.mixins import StandardResponseMixin
+from apps.core.mixins import StandardResponseMixin, Custom404Mixin
 from apps.assessments.services.exam_service import ExamService
 from apps.assessments.services.exam_session_service import ExamSessionService
 from apps.assessments.serializers import (
@@ -18,10 +18,11 @@ from apps.core.exceptions import ExamNotFoundError
 logger = logging.getLogger(__name__)
 
 
-class ExamViewSet(StandardResponseMixin, viewsets.ReadOnlyModelViewSet):
+class ExamViewSet(StandardResponseMixin, Custom404Mixin, viewsets.ReadOnlyModelViewSet):
     """ViewSet for viewing exams."""
     
     permission_classes = [permissions.IsAuthenticated]
+    not_found_message = 'Exam not found.'
     
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -40,36 +41,31 @@ class ExamViewSet(StandardResponseMixin, viewsets.ReadOnlyModelViewSet):
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
         
-        # Add active session info and grade info to each exam
-        # Response is wrapped by StandardResponseMixin: {success, message, data: {...}}
         if hasattr(response, 'data') and 'data' in response.data:
             data = response.data['data']
+            exam_ids = []
+            exam_list = []
+            
             if isinstance(data, dict) and 'results' in data:
-                # Paginated response: data = {count, next, previous, results: [...]}
-                for exam_data in data['results']:
-                    exam_id = exam_data.get('id')
-                    if exam_id:
-                        session_info = ExamSessionService.get_active_session_info(
-                            request.user, exam_id
-                        )
-                        exam_data['active_session'] = session_info
-                        grade_info = ExamSessionService.get_grade_info(
-                            request.user, exam_id
-                        )
-                        exam_data['grade_info'] = grade_info
+                exam_list = data['results']
             elif isinstance(data, list):
-                # Non-paginated response: data = [...]
-                for exam_data in data:
+                exam_list = data
+            
+            for exam_data in exam_list:
+                exam_id = exam_data.get('id')
+                if exam_id:
+                    exam_ids.append(exam_id)
+            
+            if exam_ids:
+                batch_info = ExamSessionService.get_batch_session_and_grade_info(
+                    request.user, exam_ids
+                )
+                
+                for exam_data in exam_list:
                     exam_id = exam_data.get('id')
-                    if exam_id:
-                        session_info = ExamSessionService.get_active_session_info(
-                            request.user, exam_id
-                        )
-                        exam_data['active_session'] = session_info
-                        grade_info = ExamSessionService.get_grade_info(
-                            request.user, exam_id
-                        )
-                        exam_data['grade_info'] = grade_info
+                    if exam_id and exam_id in batch_info:
+                        exam_data['active_session'] = batch_info[exam_id]['session_info']
+                        exam_data['grade_info'] = batch_info[exam_id]['grade_info']
         
         return response
     
@@ -86,7 +82,6 @@ class ExamViewSet(StandardResponseMixin, viewsets.ReadOnlyModelViewSet):
         instance = self.get_object()
         response = super().retrieve(request, *args, **kwargs)
         
-        # Add active session info and grade info
         if hasattr(response, 'data') and isinstance(response.data, dict):
             exam_data = response.data.get('data') if 'data' in response.data else response.data
             

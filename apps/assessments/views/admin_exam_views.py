@@ -5,7 +5,7 @@ import logging
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
-from apps.core.mixins import StandardResponseMixin
+from apps.core.mixins import StandardResponseMixin, Custom404Mixin
 from apps.core.response import StandardResponse
 from apps.assessments.models import Exam
 from apps.assessments.serializers.admin_serializers import (
@@ -31,10 +31,11 @@ logger = logging.getLogger(__name__)
         tags=['Admin - Exams']
     ),
 )
-class AdminExamViewSet(StandardResponseMixin, viewsets.ModelViewSet):
+class AdminExamViewSet(StandardResponseMixin, Custom404Mixin, viewsets.ModelViewSet):
     """Admin ViewSet for managing exams."""
     
     permission_classes = [permissions.IsAuthenticated, IsAdmin]
+    not_found_message = 'Exam not found.'
     
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -54,8 +55,7 @@ class AdminExamViewSet(StandardResponseMixin, viewsets.ModelViewSet):
     )
     def update(self, request, *args, **kwargs):
         exam = self.get_object()
-        if exam.has_active_sessions() or exam.has_submissions():
-            raise ExamModificationError('Cannot modify an exam that has active sessions or submissions.')
+        ExamService.validate_exam_modification(exam)
         return super().update(request, *args, **kwargs)
     
     @extend_schema(
@@ -68,8 +68,7 @@ class AdminExamViewSet(StandardResponseMixin, viewsets.ModelViewSet):
     )
     def partial_update(self, request, *args, **kwargs):
         exam = self.get_object()
-        if exam.has_active_sessions() or exam.has_submissions():
-            raise ExamModificationError('Cannot modify an exam that has active sessions or submissions.')
+        ExamService.validate_exam_modification(exam)
         return super().partial_update(request, *args, **kwargs)
     
     @extend_schema(
@@ -82,30 +81,28 @@ class AdminExamViewSet(StandardResponseMixin, viewsets.ModelViewSet):
     )
     def destroy(self, request, *args, **kwargs):
         exam = self.get_object()
-        if exam.has_active_sessions() or exam.has_submissions():
-            raise ExamModificationError('Cannot delete an exam that has active sessions or submissions.')
+        ExamService.validate_exam_modification(exam)
         return super().destroy(request, *args, **kwargs)
 
     @action(detail=True, methods=['post'], url_path='activate')
     def activate(self, request, pk=None):
         exam = self.get_object()
-        if exam.get_questions_count() == 0:
+        try:
+            ExamService.activate_exam(exam)
+            return StandardResponse.success(
+                data=AdminExamSerializer(exam).data,
+                message='Exam activated successfully'
+            )
+        except ValueError as e:
             return StandardResponse.error(
-                message='Cannot activate an exam without questions. Please add questions to the exam first.',
+                message=str(e),
                 status_code=400
             )
-        exam.is_active = True
-        exam.save(update_fields=['is_active'])
-        return StandardResponse.success(
-            data=AdminExamSerializer(exam).data,
-            message='Exam activated successfully'
-        )
 
     @action(detail=True, methods=['post'], url_path='deactivate')
     def deactivate(self, request, pk=None):
         exam = self.get_object()
-        exam.is_active = False
-        exam.save(update_fields=['is_active'])
+        ExamService.deactivate_exam(exam)
         return StandardResponse.success(
             data=AdminExamSerializer(exam).data,
             message='Exam deactivated successfully'

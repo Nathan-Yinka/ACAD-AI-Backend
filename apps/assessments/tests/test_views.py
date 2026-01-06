@@ -3,8 +3,8 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
-from rest_framework.authtoken.models import Token
 from apps.core.test_utils import create_test_user, create_test_admin
+from apps.accounts.services.user_service import UserService
 from apps.assessments.models import Exam, Question, ExamSession
 
 
@@ -14,7 +14,7 @@ class ExamViewSetTests(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.user = create_test_user(email='student@example.com')
-        self.token = Token.objects.create(user=self.user)
+        self.token = UserService.login_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.key}')
 
         self.exam = Exam.objects.create(
@@ -111,7 +111,7 @@ class SessionQuestionViewTests(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.user = create_test_user(email='student2@example.com')
-        self.token = Token.objects.create(user=self.user)
+        self.token = UserService.login_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.key}')
 
         self.exam = Exam.objects.create(
@@ -217,7 +217,7 @@ class AdminExamViewSetTests(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.admin = create_test_admin(email='admin@example.com')
-        self.token = Token.objects.create(user=self.admin)
+        self.token = UserService.login_user(self.admin)
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.key}')
 
     def test_create_exam(self):
@@ -238,7 +238,7 @@ class AdminExamViewSetTests(TestCase):
     def test_non_admin_cannot_create_exam(self):
         """Test non-admin cannot create exam."""
         user = create_test_user(email='student3@example.com')
-        token = Token.objects.create(user=user)
+        token = UserService.login_user(user)
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token.key}')
 
         url = reverse('assessments:admin-exam-list')

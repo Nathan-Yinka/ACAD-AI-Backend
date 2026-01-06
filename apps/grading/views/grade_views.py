@@ -3,6 +3,7 @@ import logging
 from rest_framework import generics, permissions
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from apps.core.response import StandardResponse
+from apps.core.mixins import Custom404Mixin, StandardResponseListMixin, StandardResponseRetrieveMixin
 from apps.grading.models import GradeHistory
 from apps.grading.serializers.grade_serializers import GradeHistoryListSerializer, GradeHistoryDetailSerializer
 from apps.core.permissions import IsStudent
@@ -10,16 +11,16 @@ from apps.core.permissions import IsStudent
 logger = logging.getLogger(__name__)
 
 
-class GradeHistoryListView(generics.ListAPIView):
+class GradeHistoryListView(StandardResponseListMixin, generics.ListAPIView):
     """List grade history for the authenticated student."""
     serializer_class = GradeHistoryListSerializer
     permission_classes = [IsStudent]
+    success_message = 'Grade history retrieved successfully'
 
     def get_queryset(self):
         """Return grade history for the current user."""
-        return GradeHistory.objects.filter(
-            student=self.request.user
-        ).select_related('exam').order_by('-created_at')
+        from apps.grading.services.grading_service import GradingService
+        return GradingService.get_student_grade_history(self.request.user)
 
     @extend_schema(
         summary='List grade history',
@@ -28,23 +29,20 @@ class GradeHistoryListView(generics.ListAPIView):
         tags=['Grades']
     )
     def get(self, request, *args, **kwargs):
-        response = super().get(request, *args, **kwargs)
-        return StandardResponse.success(
-            data=response.data,
-            message='Grade history retrieved successfully'
-        )
+        return super().get(request, *args, **kwargs)
 
 
-class GradeHistoryDetailView(generics.RetrieveAPIView):
+class GradeHistoryDetailView(Custom404Mixin, StandardResponseRetrieveMixin, generics.RetrieveAPIView):
     """Retrieve detailed grade history entry."""
     serializer_class = GradeHistoryDetailSerializer
     permission_classes = [IsStudent]
+    not_found_message = 'Grade not found.'
+    success_message = 'Grade detail retrieved successfully'
 
     def get_queryset(self):
         """Return grade history for the current user."""
-        return GradeHistory.objects.filter(
-            student=self.request.user
-        ).select_related('exam')
+        from apps.grading.services.grading_service import GradingService
+        return GradingService.get_student_grade_history(self.request.user)
 
     @extend_schema(
         summary='Get grade detail',
@@ -59,9 +57,5 @@ class GradeHistoryDetailView(generics.RetrieveAPIView):
         tags=['Grades']
     )
     def get(self, request, *args, **kwargs):
-        response = super().get(request, *args, **kwargs)
-        return StandardResponse.success(
-            data=response.data,
-            message='Grade detail retrieved successfully'
-        )
+        return super().get(request, *args, **kwargs)
 

@@ -77,8 +77,6 @@ class SessionAnswerView(generics.GenericAPIView):
             return StandardResponse.error(message=str(e), status_code=status.HTTP_400_BAD_REQUEST)
 
         answer_text = request.data.get('answer_text', '')
-        if not answer_text:
-            return StandardResponse.validation_error(message='Answer text is required.')
 
         try:
             student_answer = QuestionService.submit_single_answer(session, order, answer_text)
@@ -142,12 +140,7 @@ class SessionSubmitView(generics.GenericAPIView):
             return StandardResponse.error(message=str(e), status_code=status.HTTP_400_BAD_REQUEST)
 
         try:
-            from apps.grading.tasks import grade_submitted_session
-            
-            session.mark_completed(submission_type='MANUAL')
-            
-            grade_submitted_session.delay(session.id, token)
-            
+            ExamSessionService.submit_session(session, token)
             return StandardResponse.success(
                 data={
                     'session_id': session.id,
